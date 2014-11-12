@@ -29,7 +29,7 @@ import javafx.event.EventHandler;
 public class JourneyThroughEuropeEventHandler {
 
     private JourneyThroughEuropeUI ui;
-
+    private JourneyThroughEuropeFileLoader fl;
     /**
      * Constructor that simply saves the ui for later.
      *
@@ -62,6 +62,8 @@ public class JourneyThroughEuropeEventHandler {
 
     public void respondToRollDieRequest() {
         System.out.println("Roll");
+       // fl.loadCSVtoArrayandPrint();
+        
     }
 
     public void respondToRadioButtonSelection(Stage primaryStage) {
