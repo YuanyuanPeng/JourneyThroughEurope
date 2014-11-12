@@ -5,15 +5,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import javax.swing.JEditorPane;
 import javax.swing.text.Document;
 import javax.swing.text.html.HTMLDocument;
-
 import JTE.file.JourneyThroughEuropeFileLoader;
 import JTE.game.JourneyThroughEuropeGameData;
 import JTE.game.JourneyThroughEuropeGameStateManager;
 import application.Main.JTEPropertyType;
+import java.awt.Canvas;
 import java.awt.Panel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +20,7 @@ import properties_manager.PropertiesManager;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -34,8 +34,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
-
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -90,7 +89,6 @@ public class JourneyThroughEuropeUI extends Pane {
     private ComboBox CB;
 
     //in the center of selectionscreen
-    //private <Pane>playerPane;
     private RadioButton RBC;
     private RadioButton RBP;
     private TextField TF;
@@ -110,7 +108,7 @@ public class JourneyThroughEuropeUI extends Pane {
     private Button GameHistoryButton;
     private Button AirMapButton;
     private Button die;
-     //buttons for the map
+    //buttons for the map
 
 //Cities
     private String CityName;
@@ -150,12 +148,11 @@ public class JourneyThroughEuropeUI extends Pane {
     private JourneyThroughEuropeEventHandler eventHandler;
     private JourneyThroughEuropeErrorHandler errorHandler;
     private JourneyThroughEuropeDocumentManager docManager;
-
+    private JourneyThroughEuropeFileLoader fl;
     JourneyThroughEuropeGameStateManager gsm;
 
     public JourneyThroughEuropeUI() {
         gsm = new JourneyThroughEuropeGameStateManager(this);
-
         eventHandler = new JourneyThroughEuropeEventHandler(this);
         errorHandler = new JourneyThroughEuropeErrorHandler(primaryStage);
         docManager = new JourneyThroughEuropeDocumentManager(this);
@@ -210,7 +207,7 @@ public class JourneyThroughEuropeUI extends Pane {
         props.addProperty(JTEPropertyType.INSETS, "5");
         String str = props.getProperty(JTEPropertyType.INSETS);
         System.out.println("11111111" + str);
-   // splashScreenPane = new Pane();
+        // splashScreenPane = new Pane();
 
         StackPane splashScreenPane = new StackPane();
         splashScreenPane.setPrefSize(827, 622);
@@ -224,7 +221,7 @@ public class JourneyThroughEuropeUI extends Pane {
         // the pane
         splashScreenPane.getChildren().add(splashScreenImageLabel);
         StackPane.setAlignment(splashScreenImageLabel, Pos.CENTER);
-       //stage.setScene(new Scene(splashScreenPane));
+        //stage.setScene(new Scene(splashScreenPane));
         //stage.show();
 
         initOptionToolbar();
@@ -244,10 +241,6 @@ public class JourneyThroughEuropeUI extends Pane {
         String title = props.getProperty(JTEPropertyType.GAME_TITLE_TEXT);
         primaryStage.setTitle(title);
 
-        // THEN ADD ALL THE STUFF WE MIGHT NOW USE
-        // initOptionToolbar();
-        // OUR WORKSPACE WILL STORE EITHER THE GAME, STATS,
-        // OR HELP UI AT ANY ONE TIME
         initWorkspace();
         initGameScreen();
         initLoadPane();
@@ -358,7 +351,7 @@ public class JourneyThroughEuropeUI extends Pane {
         props.addProperty(JTEPropertyType.INSETS, "7");
         String str = props.getProperty(JTEPropertyType.INSETS);
         System.out.println("11111111" + str);
-   // splashScreenPane = new Pane();
+        // splashScreenPane = new Pane();
 
         StackPane aboutScreenPane = new StackPane();
         aboutScreenPane.setPrefSize(827, 622);
@@ -373,7 +366,7 @@ public class JourneyThroughEuropeUI extends Pane {
         aboutScreenPane.getChildren().add(aboutScreenImageLabel);
         StackPane.setAlignment(aboutScreenImageLabel, Pos.CENTER);
 
-    //Make the tool bar which will return to the main pain 
+        //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String OKImgName = props.getProperty(JTEPropertyType.OK_IMG_NAME);
         Image OKImg = loadImage(OKImgName);
@@ -402,7 +395,6 @@ public class JourneyThroughEuropeUI extends Pane {
 
         });
 
-        AboutHyperlinkListener hhl = new AboutHyperlinkListener(this);
     }
 
     private void initSelectionScreenPane() {
@@ -428,7 +420,7 @@ public class JourneyThroughEuropeUI extends Pane {
         selectScreenPane.getChildren().add(selectScreenImageLabel);
         StackPane.setAlignment(selectScreenImageLabel, Pos.CENTER);
 
-    //Make the tool bar which will return to the main pain 
+        //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String GOImgName = props.getProperty(JTEPropertyType.GO_IMG_NAME);
         Image GOImg = loadImage(GOImgName);
@@ -440,78 +432,84 @@ public class JourneyThroughEuropeUI extends Pane {
         GOButton.setPadding(marginlessInsets);
         // to the button in the toolbar
         HBox selectToolbar = new HBox();
-   // AboutPanel=new BorderPane();
+        // AboutPanel=new BorderPane();
 
         final ComboBox CB = new ComboBox();
         CB.getItems().addAll(2, 3, 4, 5, 6);
-        CB.setValue("Select Player #");
+        CB.setValue(" 2 ");
+
+        CB.setOnAction((event) -> {
+            Object player = CB.getSelectionModel().getSelectedItem();
+            String NumOfPlayer = player.toString();
+            switch (NumOfPlayer) {
+                case "2":
+                    initSeletOptions(2);
+                    break;
+                case "3":
+                    initSeletOptions(3);
+                    break;
+                case "4":
+                    initSeletOptions(4);
+                    break;
+                case "5":
+                    initSeletOptions(5);
+                    break;
+                case "6":
+                    initSeletOptions(6);
+                    break;
+                default:
+
+            }
+
+        });
 
         selectToolbar.getChildren().addAll(CB, GOButton);
 
         selectToolbar.setStyle("-fx-background-color:white");
 
-        GridPane playerSelectionGridPane = new GridPane();
+
+        mainPane.setTop(selectToolbar);
+      //  mainPane.setCenter(pPane);
+
+        GOButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);
+            }
+
+        });
+
+    }
+
+    private void initSeletOptions(int n) {
+           GridPane playerSelectionGridPane = new GridPane();
 
         playerSelectionGridPane.setHgap(10);
 
         playerSelectionGridPane.setVgap(10);
 
         playerSelectionGridPane.setPadding(new Insets(0, 10, 0, 10));
-
-        final TextField tex = new TextField();
-        tex.setPrefWidth(50);
-        tex.setPrefHeight(10);
-
-        ArrayList<String> flagImages = props
+for(int i=0;i<n;i++){
+    
+    
+    
+     PropertiesManager props = PropertiesManager.getPropertiesManager();
+             ArrayList<String> flagImages = props
                 .getPropertyOptionsList(JTEPropertyType.FLAG_IMG_NAMES);
 
-        String flagImageName = flagImages.get(0);
+        String flagImageName = flagImages.get(i);
         Image flagImage = loadImage(flagImageName);
         ImageView flagImageView = new ImageView(flagImage);
         flagScreenImageLael = new Label();
         flagScreenImageLael.setGraphic(flagImageView);
-       
-         String flagImageName1 = flagImages.get(1);
-        Image flagImage1 = loadImage(flagImageName1);
-        ImageView flagImageView1 = new ImageView(flagImage1);
-        Label flagScreenImageLael1 = new Label();
-        flagScreenImageLael1.setGraphic(flagImageView1);
         
-       
-        
-        StackPane pPane = new StackPane();
-        RBC = new RadioButton("Computer");
-        RBP = new RadioButton("Player");
-        TF = new TextField("Player" + 1);
-
-        RadioButton RBC1 = new RadioButton("Computer");
-        RadioButton RBP1 = new RadioButton("Player");
-        TextField TF1 = new TextField("Player" + 2);
-        
-       
-        int playernum = 2;
-
-        TF.setId("Player" + playernum);
-        pPane.getChildren().addAll(playerSelectionGridPane);
-        // playerSelectionGridPane.add(flagScreenImageLael,0,2);
-        playerSelectionGridPane.add(flagScreenImageLael, 0, 3);
-        playerSelectionGridPane.add(flagScreenImageLael1, 4,3);
-       
-        // playerSelectionGridPane.add(flagScreenImageLael,0,4);
-        playerSelectionGridPane.add(RBC, 1, 2);
-        playerSelectionGridPane.add(RBC1, 5, 2);
+    int num=i+1;
+VBox opVBox = new VBox();
+    RBC = new RadioButton("Computer");
+    RBP = new RadioButton("Player");
+    TF = new TextField("Player" +num);
     
-        
-        playerSelectionGridPane.add(RBP, 1, 3);
-        playerSelectionGridPane.add(RBP1, 5, 3);
-     
-         
-        playerSelectionGridPane.add(TF, 1, 4);
-        playerSelectionGridPane.add(TF1,5, 4);
-        
-  //flagScreenImageLael,RBC,RBP,TF
-
-        RBC.setOnAction(new EventHandler<ActionEvent>() {
+    RBC.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 isComputer = true;
@@ -529,38 +527,27 @@ public class JourneyThroughEuropeUI extends Pane {
             }
 
         });
-         RBC1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                isComputer = true;
-                RBP1.setDisable(true);
-                eventHandler.respondToRadioButtonSelection(primaryStage);
-            }
+    
+    
+    opVBox.getChildren().addAll(flagScreenImageLael,RBC,RBP,TF);
+if(n<4){
+    playerSelectionGridPane.add(opVBox, i, 1);
+}
+else
+playerSelectionGridPane.add(opVBox, i, 5);
 
-        });
-        RBP1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                isPerson = true;
-                RBC1.setDisable(true);
-                eventHandler.respondToRadioButtonSelection(primaryStage);
-            }
 
-        });
+ 
 
-        mainPane.setTop(selectToolbar);
-        mainPane.setCenter(pPane);
 
-        GOButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);
-            }
+}
 
-        });
+mainPane.setCenter(playerSelectionGridPane);
+
+
+
 
     }
-
     JEditorPane gamePane;
 
     private void initGameScreen() {
@@ -571,6 +558,7 @@ public class JourneyThroughEuropeUI extends Pane {
         String str = props.getProperty(JTEPropertyType.INSETS);
         System.out.println("11111111" + str);
 
+        fl.loadCSVtoArrayandPrint();
         StackPane GameScreenPane = new StackPane();
         GameScreenPane.setPrefSize(600, 800);
 
@@ -584,7 +572,7 @@ public class JourneyThroughEuropeUI extends Pane {
         GameScreenPane.getChildren().add(MAPScreenImageLabel);
         StackPane.setAlignment(MAPScreenImageLabel, Pos.CENTER);
 
-         //Make the tool bar which will return to the main pain 
+        //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String AboutJTEImgName = props.getProperty(JTEPropertyType.ABOUT_JTE_IMG_NAME);
         Image AboutJTEImg = loadImage(AboutJTEImgName);
@@ -664,7 +652,7 @@ public class JourneyThroughEuropeUI extends Pane {
         props.addProperty(JTEPropertyType.INSETS, "7");
         String str = props.getProperty(JTEPropertyType.INSETS);
         System.out.println("11111111" + str);
-   // splashScreenPane = new Pane();
+        // splashScreenPane = new Pane();
 
         StackPane loadScreenPane = new StackPane();
 
@@ -684,7 +672,7 @@ public class JourneyThroughEuropeUI extends Pane {
         loadToolbar.setStyle("-fx-background-color:white");
 
         mainPane.setBottom(loadToolbar);
-    //mainPane.setCenter(aboutScreenPane);
+        //mainPane.setCenter(aboutScreenPane);
 
         OKButton1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -703,7 +691,7 @@ public class JourneyThroughEuropeUI extends Pane {
         props.addProperty(JTEPropertyType.INSETS, "9");
         String str = props.getProperty(JTEPropertyType.INSETS);
         System.out.println("11111111" + str);
-   // splashScreenPane = new Pane();
+        // splashScreenPane = new Pane();
 
         StackPane AIRScreenPane = new StackPane();
         AIRScreenPane.setPrefSize(827, 622);
@@ -718,7 +706,7 @@ public class JourneyThroughEuropeUI extends Pane {
         AIRScreenPane.getChildren().add(AIRScreenImageLabel);
         StackPane.setAlignment(AIRScreenImageLabel, Pos.CENTER);
 
-    //Make the tool bar which will return to the main pain 
+        //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String OKImgName = props.getProperty(JTEPropertyType.OK_IMG_NAME);
         Image OKImg = loadImage(OKImgName);
@@ -730,8 +718,6 @@ public class JourneyThroughEuropeUI extends Pane {
         OKButton.setPadding(marginlessInsets);
         // to the button in the toolbar
         VBox aboutToolbar = new VBox();
-   // AboutPanel=new BorderPane();
-
         // AboutPanel.setCenter(AboutPane);
         aboutToolbar.getChildren().add(OKButton);
         aboutToolbar.setStyle("-fx-background-color:white");
@@ -780,14 +766,6 @@ public class JourneyThroughEuropeUI extends Pane {
                 break;
             default:
         }
-    }
-
-    public void City(String CityName, String Color, int part, int x, int y) {
-        this.CityName = CityName;
-        this.Color = Color;
-        this.part = part;
-        this.x = x;
-        this.y = y;
     }
 
     public void loadPage(JEditorPane AboutPane, JTEPropertyType fileProperty) {
