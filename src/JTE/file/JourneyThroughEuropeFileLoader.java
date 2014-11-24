@@ -1,5 +1,6 @@
 package JTE.file;
 
+import JTE.ui.City;
 import java.io.File;
 
 import java.io.BufferedReader;
@@ -9,19 +10,17 @@ import java.io.IOException;
 import application.Main.JTEPropertyType;
 import properties_manager.PropertiesManager;
 import JTE.ui.JourneyThroughEuropeUI;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.swing.text.Element;
-import org.w3c.dom.Document;
+
 //import javax.swing.text.Document;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import jdk.internal.org.xml.sax.SAXException;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import java.util.Scanner;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  *
@@ -31,47 +30,80 @@ public class JourneyThroughEuropeFileLoader {
 
     private JourneyThroughEuropeUI ui;
     private String FilePath = "data/";
-    static String[][] AllCities;
 
     public JourneyThroughEuropeFileLoader(JourneyThroughEuropeUI initUI) {
         ui = initUI;
     }
+
     // Document doc =  builder.parse(new File());
     // set up an array for the value of city
     // static String[][]csvToArray;
+//public static void 
 
-    public static void loadCSVtoArrayandPrint() {
-        //csvToArray=new String[180][5];
-        // AllCities=new String [179][5];
-        Scanner fromFile = null;
-       // int rowc=0;
-        //int row=0;
-        //int colc=0;
-        // int col=0;
+    public ArrayList<City> loadCSVFile() {
+        ArrayList<City> cities = new ArrayList();
 
-        String InputLine = "";
-        //String fileLocation;
-        String fileName = "cities.txt";
+        String fileName = "cities.csv";
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         fileName = props.getProperty(JTEPropertyType.DATA_PATH) + fileName;
 
         try {
-            fromFile = new Scanner(new BufferedReader(new FileReader(fileName)));
 
+            Scanner fromFile = new Scanner(new BufferedReader(new FileReader(fileName)));
+            int CityX=0;
+            int CityY=0;
+            //String b[]=null;
             while (fromFile.hasNextLine()) {
-                InputLine = fromFile.nextLine();
 
-                String[] CityInfo = InputLine.split(" ");
-                //Print all the city out
-                System.out.println(Arrays.toString(CityInfo));
+                String Input = fromFile.nextLine();
+                String[] c = Input.split("\t");
+                //System.out.println(c[0]);
 
-        //Loop to city's name color part x and y coordinate 
+                // c[0] cityName  c[1] cityColor  c[2] Part    c[3] CityX    c[4] CityY
+                String a = c[0];
+                String b = c[1];
+                int p = Integer.parseInt(c[2]);
+                int x = Integer.parseInt(c[3]);
+                int y = Integer.parseInt(c[4]);
+                switch (p){
+                    case 1:
+                        CityX =(int) ((x * 517)/2010);
+                        CityY =(int) ((y * 660)/ 2569);
+                        break;
+                    case 2:
+                         CityX = (int)((x * 517) / 1903);
+                         CityY = (int)((y * 660) / 2585);
+                        break;
+                    case 3:
+                         CityX = (int)((x * 517) / 1985);
+                        CityY = (int)((y * 660) / 2585);
+                        break;
+                    case 4:
+                         CityX = (int)((x * 517) / 1972);
+                        CityY = (int)((y * 660) / 2583);
+                        break;
+                    default:
+                
+                }
+                
+
+            
+                System.out.println(a+","+b+","+p+","+ CityX+","+CityY);
+
+                City city = new City(a, b, p, CityX, CityY);
+                
+                cities.add(city);
+               
+
             }
 
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.print(e);
         }
+
+        //    System.out.println(cities);
+        return cities;
     }
 
     public static String loadTextFile(String fileName) throws IOException {
