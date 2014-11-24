@@ -14,6 +14,10 @@ import JTE.game.JourneyThroughEuropeGameStateManager;
 import application.Main.JTEPropertyType;
 import java.awt.Canvas;
 import java.awt.Panel;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import properties_manager.PropertiesManager;
@@ -35,6 +39,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -46,6 +51,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javax.swing.JScrollPane;
+import javax.xml.stream.XMLStreamException;
 
 /**
  *
@@ -56,14 +62,14 @@ public class JourneyThroughEuropeUI extends Pane {
     public enum JTEUIState {
 
         SPLASH_SCREEN_STATE, START_GAME_STATE, PLAY_GAME_STATE, VIEW_ABOUT_STATE, LOAD_HISTORY_STATE,
-        VIEW_AIR_MAP_STATE,
+        VIEW_AIR_MAP_STATE,AC14_MAP_STATE,DF14_MAP_STATE,AC58_MAP_STATE,DF58_MAP_STATE,
     }
 
     // mainStage
     private Stage primaryStage;
 
     // mainPane
-    private BorderPane mainPane;
+    public BorderPane mainPane;
     private BorderPane hmPane;
 
     // SplashScreen
@@ -107,15 +113,14 @@ public class JourneyThroughEuropeUI extends Pane {
     private Button AboutJTEButton;
     private Button GameHistoryButton;
     private Button AirMapButton;
-    private Button die;
-    //buttons for the map
-
-//Cities
-    private String CityName;
-    private String Color;
-    private int part;
-    private int x;
-    private int y;
+    
+      private Button AC14;//switch pane to ac14
+      private Button DF14;//switch pane to df14
+      private Button AC58;//switch pane to ac58
+      private Button DF58;
+    //private Button dice;
+    public Button dice;
+//buttons for the map
 
     //LoadPane
     private BorderPane LoadPanel;
@@ -144,6 +149,8 @@ public class JourneyThroughEuropeUI extends Pane {
     private int paneWidth;
     private int paneHeigth;
 
+    boolean isFromSplashScreen=false;
+    
     // THIS CLASS WILL HANDLE ALL ACTION EVENTS FOR THIS PROGRAM
     private JourneyThroughEuropeEventHandler eventHandler;
     private JourneyThroughEuropeErrorHandler errorHandler;
@@ -156,6 +163,7 @@ public class JourneyThroughEuropeUI extends Pane {
         eventHandler = new JourneyThroughEuropeEventHandler(this);
         errorHandler = new JourneyThroughEuropeErrorHandler(primaryStage);
         docManager = new JourneyThroughEuropeDocumentManager(this);
+        fl = new JourneyThroughEuropeFileLoader(this);
         initMainPane();
         initSplashScreen();
     }
@@ -204,11 +212,7 @@ public class JourneyThroughEuropeUI extends Pane {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String splashScreenImagePath = props
                 .getProperty(JTEPropertyType.SPLASH_SCREEN_IMAGE_NAME);
-        props.addProperty(JTEPropertyType.INSETS, "5");
-        String str = props.getProperty(JTEPropertyType.INSETS);
-        System.out.println("11111111" + str);
-        // splashScreenPane = new Pane();
-
+      
         StackPane splashScreenPane = new StackPane();
         splashScreenPane.setPrefSize(827, 622);
 
@@ -221,12 +225,7 @@ public class JourneyThroughEuropeUI extends Pane {
         // the pane
         splashScreenPane.getChildren().add(splashScreenImageLabel);
         StackPane.setAlignment(splashScreenImageLabel, Pos.CENTER);
-        //stage.setScene(new Scene(splashScreenPane));
-        //stage.show();
-
         initOptionToolbar();
-        // add key listener
-
         mainPane.setCenter(splashScreenPane);
         mainPane.setBottom(OptionToolbar);
 
@@ -235,20 +234,11 @@ public class JourneyThroughEuropeUI extends Pane {
     public void initJourneyThroughEuropeUI() {
 
         mainPane.setBottom(null);
-
         // GET THE UPDATED TITLE
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String title = props.getProperty(JTEPropertyType.GAME_TITLE_TEXT);
         primaryStage.setTitle(title);
-
-        initWorkspace();
-        initGameScreen();
-        initLoadPane();
-        initAboutPane();
-        initSelectionScreenPane();
-
-        // WE'LL START OUT WITH THE GAME SCREEN
-        // changeWorkspace(JTEUIState.PLAY_GAME_STATE);
+  
     }
 
     private void initOptionToolbar() {
@@ -257,10 +247,8 @@ public class JourneyThroughEuropeUI extends Pane {
         OptionToolbar.setSpacing(10.0);
         OptionToolbar.setPadding(marginlessInsets);
         OptionToolbar.setAlignment(Pos.CENTER);
-
-        /*
-         set the StartButton to the SplashScreen
-         */
+       //set the StartButton to the SplashScreen
+        
         StartButton = initToolbarButton(OptionToolbar, JTEPropertyType.START_IMG_NAME);
         //setTooltip(StartButton,JTEPropertyType.START_TOOLTIP);
         StartButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -283,17 +271,19 @@ public class JourneyThroughEuropeUI extends Pane {
                 eventHandler.respondToSwitchScreenRequest(JTEUIState.LOAD_HISTORY_STATE);
             }
 
-        });
+       });
 
         /*
          set the AboutButton to SplashScreen
          */
+        
         AboutButton = initToolbarButton(OptionToolbar, JTEPropertyType.ABOUT_IMG_NAME);
         //setTooltip(StartButton,JTEPropertyType.ABOUT_TOOLTIP);
         AboutButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
+                
                 eventHandler.respondToSwitchScreenRequest(JTEUIState.VIEW_ABOUT_STATE);
             }
 
@@ -319,53 +309,31 @@ public class JourneyThroughEuropeUI extends Pane {
     private Button initToolbarButton(HBox Toolbar, JTEPropertyType prop) {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String imgName = props.getProperty(prop);
-
         //Load image
         Image image = loadImage(imgName);
         ImageView imageIcon = new ImageView(image);
-
         //Make the button
         Button button = new Button();
         button.setGraphic(imageIcon);
+        button.setStyle("-fx-background-color:transparent");
         Toolbar.getChildren().add(button);
         return button;
-
     }
 
-    private void initWorkspace() {
-        // THE WORKSPACE WILL GO IN THE CENTER OF THE WINDOW, UNDER THE NORTH
-        // TOOLBAR
-        workspace = new Pane();
-        mainPane.setCenter(workspace);
-        mainPane.getChildren().add(workspace);
-        System.out.println("in the initWorkspace");
-    }
-
+ 
     private void initAboutPane() {
-
         System.out.println("aboutpane");
-
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String aboutScreenImagePath = props
                 .getProperty(JTEPropertyType.ABOUT_SCREEN_IMAGE_NAME);
-        props.addProperty(JTEPropertyType.INSETS, "7");
-        String str = props.getProperty(JTEPropertyType.INSETS);
-        System.out.println("11111111" + str);
-        // splashScreenPane = new Pane();
-
+               // splashScreenPane = new Pane();
         StackPane aboutScreenPane = new StackPane();
         aboutScreenPane.setPrefSize(827, 622);
-
         Image aboutScreenImage = loadImage(aboutScreenImagePath);
         aboutScreenImageView = new ImageView(aboutScreenImage);
 
-        aboutScreenImageLabel = new Label();
-        aboutScreenImageLabel.setGraphic(aboutScreenImageView);
-        aboutScreenImageLabel.setLayoutX(-45);// move the label position to fix
-        // the pane
-        aboutScreenPane.getChildren().add(aboutScreenImageLabel);
-        StackPane.setAlignment(aboutScreenImageLabel, Pos.CENTER);
-
+        aboutScreenPane.getChildren().add(aboutScreenImageView);
+        StackPane.setAlignment(aboutScreenImageView, Pos.CENTER);
         //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String OKImgName = props.getProperty(JTEPropertyType.OK_IMG_NAME);
@@ -386,25 +354,29 @@ public class JourneyThroughEuropeUI extends Pane {
 
         mainPane.setBottom(aboutToolbar);
         mainPane.setCenter(aboutScreenPane);
-
+if(isFromSplashScreen=true){
         OKButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                eventHandler.respondToSwitchScreenRequest(JTEUIState.SPLASH_SCREEN_STATE);
-            }
+                                eventHandler.respondToSwitchScreenRequest(JTEUIState.SPLASH_SCREEN_STATE);
+                         }
 
         });
+}
+else{
+ OKButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                                eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);          
+            }
 
+        });}
     }
 
     private void initSelectionScreenPane() {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String selectScreenImagePath = props
                 .getProperty(JTEPropertyType.SELECT_SCREEN_IMAGE_NAME);
-        props.addProperty(JTEPropertyType.INSETS, "6");
-        String str = props.getProperty(JTEPropertyType.INSETS);
-        System.out.println("11111111" + str);
-
         SelectionPane = new SplitPane();
 
         StackPane selectScreenPane = new StackPane();
@@ -428,6 +400,7 @@ public class JourneyThroughEuropeUI extends Pane {
 
         GOButton = new Button();
         GOButton.setGraphic(GOImgIcon);
+        GOButton.setStyle("-fx-background-color:transparent");
         // setTooltip(homeButton, jtePropertyType.OK_TOOLTIP);
         GOButton.setPadding(marginlessInsets);
         // to the button in the toolbar
@@ -464,88 +437,52 @@ public class JourneyThroughEuropeUI extends Pane {
         });
 
         selectToolbar.getChildren().addAll(CB, GOButton);
-
         selectToolbar.setStyle("-fx-background-color:white");
-
-
         mainPane.setTop(selectToolbar);
-      //  mainPane.setCenter(pPane);
-
-        GOButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);
-            }
-
+        //  mainPane.setCenter(pPane);
+        GOButton.setOnAction((ActionEvent event) -> {
+            eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);
         });
-
     }
 
     private void initSeletOptions(int n) {
-           GridPane playerSelectionGridPane = new GridPane();
+        GridPane playerSelectionGridPane = new GridPane();
+            for (int i = 0; i < n; i++) {
+System.out.println("Print out "+i+"Options");
+            PropertiesManager props = PropertiesManager.getPropertiesManager();
+            ArrayList<String> flagImages = props
+                    .getPropertyOptionsList(JTEPropertyType.FLAG_IMG_NAMES);
 
-        playerSelectionGridPane.setHgap(10);
+            String flagImageName = flagImages.get(i);
+            Image flagImage = loadImage(flagImageName);
+            ImageView flagImageView = new ImageView(flagImage);
+            flagScreenImageLael = new Label();
+            flagScreenImageLael.setGraphic(flagImageView);
 
-        playerSelectionGridPane.setVgap(10);
-
-        playerSelectionGridPane.setPadding(new Insets(0, 10, 0, 10));
-for(int i=0;i<n;i++){
-    
-    
-    
-     PropertiesManager props = PropertiesManager.getPropertiesManager();
-             ArrayList<String> flagImages = props
-                .getPropertyOptionsList(JTEPropertyType.FLAG_IMG_NAMES);
-
-        String flagImageName = flagImages.get(i);
-        Image flagImage = loadImage(flagImageName);
-        ImageView flagImageView = new ImageView(flagImage);
-        flagScreenImageLael = new Label();
-        flagScreenImageLael.setGraphic(flagImageView);
-        
-    int num=i+1;
-VBox opVBox = new VBox();
-    RBC = new RadioButton("Computer");
-    RBP = new RadioButton("Player");
-    TF = new TextField("Player" +num);
-    
-    RBC.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+            int num = i + 1;
+            VBox opVBox = new VBox();
+            RBC = new RadioButton("Computer");
+            RBP = new RadioButton("Player");
+            TF = new TextField("Player" + num);
+           
+            RBC.setOnAction((ActionEvent event) -> {
                 isComputer = true;
                 RBP.setDisable(true);
                 eventHandler.respondToRadioButtonSelection(primaryStage);
-            }
-
-        });
-        RBP.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+});
+            RBP.setOnAction((ActionEvent event) -> {
                 isPerson = true;
                 RBC.setDisable(true);
                 eventHandler.respondToRadioButtonSelection(primaryStage);
+});
+            opVBox.getChildren().addAll(flagScreenImageLael, RBC, RBP, TF);
+            if (n < 4) {
+                playerSelectionGridPane.add(opVBox, i, 0);
+            } else {
+                playerSelectionGridPane.add(opVBox, i, 4);
             }
-
-        });
-    
-    
-    opVBox.getChildren().addAll(flagScreenImageLael,RBC,RBP,TF);
-if(n<4){
-    playerSelectionGridPane.add(opVBox, i, 1);
-}
-else
-playerSelectionGridPane.add(opVBox, i, 5);
-
-
- 
-
-
-}
-
-mainPane.setCenter(playerSelectionGridPane);
-
-
-
+        }
+        mainPane.setCenter(playerSelectionGridPane);
 
     }
     JEditorPane gamePane;
@@ -554,24 +491,18 @@ mainPane.setCenter(playerSelectionGridPane);
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String MAPScreenImagePath = props
                 .getProperty(JTEPropertyType.GAME_MAP_AC14_IMAGE_NAME);
-        props.addProperty(JTEPropertyType.INSETS, "8");
-        String str = props.getProperty(JTEPropertyType.INSETS);
-        System.out.println("11111111" + str);
-
-        fl.loadCSVtoArrayandPrint();
+        // fl.loadCSVFile();
         StackPane GameScreenPane = new StackPane();
-        GameScreenPane.setPrefSize(600, 800);
+       // GameScreenPane.setPrefSize(600, 800);
 
         Image MAPScreenImage = loadImage(MAPScreenImagePath);
         MAPScreenImageView = new ImageView(MAPScreenImage);
-
-        MAPScreenImageLabel = new Label();
-        MAPScreenImageLabel.setGraphic(MAPScreenImageView);
-        MAPScreenImageLabel.setLayoutX(-45);// move the label position to fix
-        // the pane
-        GameScreenPane.getChildren().add(MAPScreenImageLabel);
-        StackPane.setAlignment(MAPScreenImageLabel, Pos.CENTER);
-
+        AnchorPane ap =  new AnchorPane();
+        
+       
+        GameScreenPane.getChildren().addAll(MAPScreenImageView,ap);
+        StackPane.setAlignment(MAPScreenImageView, Pos.CENTER);
+        
         //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String AboutJTEImgName = props.getProperty(JTEPropertyType.ABOUT_JTE_IMG_NAME);
@@ -581,66 +512,83 @@ mainPane.setCenter(playerSelectionGridPane);
         AboutJTEButton = new Button();
         AboutJTEButton.setGraphic(AboutJTEImgIcon);
         AboutJTEButton.setPadding(marginlessInsets);
-
+        AboutJTEButton.setStyle("-fx-background-color:transparent");
+        
         String HistoryImgName = props.getProperty(JTEPropertyType.GAME_HISTORY_IMAGE_NAME);
         Image HistoryImg = loadImage(HistoryImgName);
         ImageView HistoryImgIcon = new ImageView(HistoryImg);
         GameHistoryButton = new Button();
         GameHistoryButton.setGraphic(HistoryImgIcon);
         GameHistoryButton.setPadding(marginlessInsets);
-
+        GameHistoryButton.setStyle("-fx-background-color:transparent");
+        
         String airImgName = props.getProperty(JTEPropertyType.AIR_MAP_IMG_NAME);
         Image airImg = loadImage(airImgName);
         ImageView airImgIcon = new ImageView(airImg);
         AirMapButton = new Button();
         AirMapButton.setGraphic(airImgIcon);
         AirMapButton.setPadding(marginlessInsets);
-
-        String dieImgName = props.getProperty(JTEPropertyType.DIE_IMAGE_NAME);
-        Image dieImg = loadImage(dieImgName);
-        ImageView dieImgIcon = new ImageView(dieImg);
-        die = new Button();
-        die.setGraphic(dieImgIcon);
-        die.setPadding(marginlessInsets);
-
-        // to the button in the toolbar
+        AirMapButton.setStyle("-fx-background-color:transparent");
+        
+        dice = new Button(" Click to Roll the Dice");
+        
+        GridPane GridMap = new GridPane();
+        
+         AC14= new Button("AC14");//switch pane to ac14
+        DF14= new Button("DF14");//switch pane to df14
+         AC58= new Button ("AC58");//switch pane to ac58
+        DF58=new Button ("DF58");//switch pane to df58
+      
+        //playerSelectionGridPane.add(opVBox, i, 0);
+        GridMap.add(AC14,0,0);
+        GridMap.add(DF14,1,0);
+        GridMap.add(AC58,0,1);
+        GridMap.add(DF58,1,1);
+        
         VBox selectToolbar = new VBox();
-
-        selectToolbar.getChildren().addAll(die, AirMapButton, AboutJTEButton, GameHistoryButton);
-
+        selectToolbar.getChildren().addAll(dice, GridMap,AirMapButton, AboutJTEButton, GameHistoryButton);
         selectToolbar.setStyle("-fx-background-color:white");
-
+        
+        StackPane cardPane =  new StackPane();
+        
+        
+        
+        
         mainPane.setRight(selectToolbar);
         mainPane.setCenter(GameScreenPane);
-
-        AboutJTEButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                eventHandler.respondToSwitchScreenRequest(JTEUIState.VIEW_ABOUT_STATE);
-            }
-
+        mainPane.setLeft(cardPane);
+        
+        AC14.setOnAction((ActionEvent event) -> {
+            eventHandler.respondToSwitchMapRequest(JTEUIState.AC14_MAP_STATE);
         });
-        AirMapButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                eventHandler.respondToSwitchScreenRequest(JTEUIState.VIEW_AIR_MAP_STATE);
-            }
-
+        DF14.setOnAction((ActionEvent event) -> {
+                    eventHandler.respondToSwitchMapRequest(JTEUIState.DF14_MAP_STATE);
         });
-        GameHistoryButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                eventHandler.respondToSwitchScreenRequest(JTEUIState.LOAD_HISTORY_STATE);
-            }
-
+        AC58.setOnAction((ActionEvent event) -> {
+                    eventHandler.respondToSwitchMapRequest(JTEUIState.AC58_MAP_STATE);
         });
-        die.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                eventHandler.respondToRollDieRequest();
-            }
-
+        DF58.setOnAction((ActionEvent event) -> {
+            eventHandler.respondToSwitchMapRequest(JTEUIState.DF58_MAP_STATE);
+        });        
+       
+        AboutJTEButton.setOnAction((ActionEvent event) -> {
+            eventHandler.respondToSwitchScreenRequest(JTEUIState.VIEW_ABOUT_STATE);
         });
+        AirMapButton.setOnAction((ActionEvent event) -> {
+            eventHandler.respondToSwitchScreenRequest(JTEUIState.VIEW_AIR_MAP_STATE);
+        });
+        GameHistoryButton.setOnAction((ActionEvent event) -> {
+            eventHandler.respondToSwitchScreenRequest(JTEUIState.LOAD_HISTORY_STATE);
+        });
+        dice.setOnAction((ActionEvent event) -> {
+            eventHandler.respondToRollDiceRequest();
+        });
+        
+        ap.setOnMouseClicked((MouseEvent t) -> {
+                      eventHandler.respondToClick(t);
+        });
+        
+        
     }
 
     private void initLoadPane() {
@@ -649,11 +597,7 @@ mainPane.setCenter(playerSelectionGridPane);
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String loadScreenImagePath = props
                 .getProperty(JTEPropertyType.ABOUT_SCREEN_IMAGE_NAME);
-        props.addProperty(JTEPropertyType.INSETS, "7");
-        String str = props.getProperty(JTEPropertyType.INSETS);
-        System.out.println("11111111" + str);
-        // splashScreenPane = new Pane();
-
+        
         StackPane loadScreenPane = new StackPane();
 
         String OKImgName = props.getProperty(JTEPropertyType.OK_IMG_NAME);
@@ -661,19 +605,15 @@ mainPane.setCenter(playerSelectionGridPane);
         ImageView OKImgIcon = new ImageView(OKImg);
         Button OKButton1 = new Button();
         OKButton1.setGraphic(OKImgIcon);
-        // setTooltip(homeButton, jtePropertyType.OK_TOOLTIP);
         OKButton1.setPadding(marginlessInsets);
-        // to the button in the toolbar
         HBox loadToolbar = new HBox();
    // AboutPanel=new BorderPane();
 
         // AboutPanel.setCenter(AboutPane);
         loadToolbar.getChildren().add(OKButton1);
         loadToolbar.setStyle("-fx-background-color:white");
-
         mainPane.setBottom(loadToolbar);
         //mainPane.setCenter(aboutScreenPane);
-
         OKButton1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -682,7 +622,6 @@ mainPane.setCenter(playerSelectionGridPane);
 
         });
     }
-
     private void initAIRPane() {
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -691,8 +630,6 @@ mainPane.setCenter(playerSelectionGridPane);
         props.addProperty(JTEPropertyType.INSETS, "9");
         String str = props.getProperty(JTEPropertyType.INSETS);
         System.out.println("11111111" + str);
-        // splashScreenPane = new Pane();
-
         StackPane AIRScreenPane = new StackPane();
         AIRScreenPane.setPrefSize(827, 622);
 
@@ -705,8 +642,7 @@ mainPane.setCenter(playerSelectionGridPane);
         // the pane
         AIRScreenPane.getChildren().add(AIRScreenImageLabel);
         StackPane.setAlignment(AIRScreenImageLabel, Pos.CENTER);
-
-        //Make the tool bar which will return to the main pain 
+       //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String OKImgName = props.getProperty(JTEPropertyType.OK_IMG_NAME);
         Image OKImg = loadImage(OKImgName);
@@ -716,6 +652,7 @@ mainPane.setCenter(playerSelectionGridPane);
         OKButton.setGraphic(OKImgIcon);
         // setTooltip(homeButton, jtePropertyType.OK_TOOLTIP);
         OKButton.setPadding(marginlessInsets);
+        OKButton.setStyle("-fx-background-color:transparent");
         // to the button in the toolbar
         VBox aboutToolbar = new VBox();
         // AboutPanel.setCenter(AboutPane);
@@ -746,24 +683,21 @@ mainPane.setCenter(playerSelectionGridPane);
             case START_GAME_STATE:
                 System.out.println("test");
                 mainPane.getChildren().clear();
-                // mainPane.setCenter(SelectionScreenPanel);
                 initSelectionScreenPane();
                 break;
             case PLAY_GAME_STATE:
                 mainPane.getChildren().clear();
-                //  mainPane.setCenter(GamePanel);
                 initGameScreen();
                 break;
             case VIEW_ABOUT_STATE:
-                //System.out.println("test");
                 mainPane.getChildren().clear();
-                // mainPane.setCenter(AboutPanel);
                 initAboutPane();
                 break;
             case LOAD_HISTORY_STATE:
                 mainPane.getChildren().clear();
                 initLoadPane();
                 break;
+            
             default:
         }
     }
