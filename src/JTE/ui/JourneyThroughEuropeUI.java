@@ -15,6 +15,7 @@ import application.Main.JTEPropertyType;
 import java.awt.Canvas;
 import java.awt.Panel;
 import java.io.FileNotFoundException;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,6 +60,8 @@ import javax.xml.stream.XMLStreamException;
  */
 public class JourneyThroughEuropeUI extends Pane {
 
+   
+
     public enum JTEUIState {
 
         SPLASH_SCREEN_STATE, START_GAME_STATE, PLAY_GAME_STATE, VIEW_ABOUT_STATE, LOAD_HISTORY_STATE,
@@ -92,7 +95,7 @@ public class JourneyThroughEuropeUI extends Pane {
     private BorderPane SelectionScreenPanel;// top for the combobox and go button
     private HBox SelectionToolbar;
     private Button GOButton;
-    private ComboBox CB;
+    public  ComboBox CB;
 
     //in the center of selectionscreen
     private RadioButton RBC;
@@ -107,7 +110,8 @@ public class JourneyThroughEuropeUI extends Pane {
     private BorderPane GamePanel;//borderpane for it 
     private JEditorPane GamePane;
     private JScrollPane GameScrollPane;
-
+    public AnchorPane ap;
+    public StackPane GameScreenPane;
     //GameScreenButtons
     private VBox GameToolOption;
     private Button AboutJTEButton;
@@ -148,7 +152,7 @@ public class JourneyThroughEuropeUI extends Pane {
     // mainPane weight && height
     private int paneWidth;
     private int paneHeigth;
-
+    public Label PlayerImageLabel;
     boolean isFromSplashScreen=false;
     
     // THIS CLASS WILL HANDLE ALL ACTION EVENTS FOR THIS PROGRAM
@@ -407,7 +411,7 @@ else{
         HBox selectToolbar = new HBox();
         // AboutPanel=new BorderPane();
 
-        final ComboBox CB = new ComboBox();
+   CB = new ComboBox();
         CB.getItems().addAll(2, 3, 4, 5, 6);
         CB.setValue(" 2 ");
 
@@ -436,12 +440,35 @@ else{
 
         });
 
+       
+            
         selectToolbar.getChildren().addAll(CB, GOButton);
         selectToolbar.setStyle("-fx-background-color:white");
         mainPane.setTop(selectToolbar);
-        //  mainPane.setCenter(pPane);
         GOButton.setOnAction((ActionEvent event) -> {
             eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);
+                     Object player = CB.getSelectionModel().getSelectedItem();
+            String NumOfPlayer = player.toString();
+          switch (NumOfPlayer) {
+                case "2":
+                     eventHandler.respondToPalayRequest(2);
+                    break;
+                case "3":
+                     eventHandler.respondToPalayRequest(3);
+                    break;
+                case "4":
+                     eventHandler.respondToPalayRequest(4);
+                    break;
+                case "5":
+                     eventHandler.respondToPalayRequest(5);
+                    break;
+                case "6":
+                     eventHandler.respondToPalayRequest(6);
+                    break;
+                default:
+
+            }
+          
         });
     }
 
@@ -467,12 +494,12 @@ System.out.println("Print out "+i+"Options");
            
             RBC.setOnAction((ActionEvent event) -> {
                 isComputer = true;
-                RBP.setDisable(true);
+               // RBP.setDisable(true);
                 eventHandler.respondToRadioButtonSelection(primaryStage);
 });
             RBP.setOnAction((ActionEvent event) -> {
                 isPerson = true;
-                RBC.setDisable(true);
+              //  RBC.setDisable(true);
                 eventHandler.respondToRadioButtonSelection(primaryStage);
 });
             opVBox.getChildren().addAll(flagScreenImageLael, RBC, RBP, TF);
@@ -491,18 +518,29 @@ System.out.println("Print out "+i+"Options");
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String MAPScreenImagePath = props
                 .getProperty(JTEPropertyType.GAME_MAP_AC14_IMAGE_NAME);
-        // fl.loadCSVFile();
-        StackPane GameScreenPane = new StackPane();
-       // GameScreenPane.setPrefSize(600, 800);
+         //fl.loadNeighbourCity();
+        GameScreenPane = new StackPane();
+        GameScreenPane.setPrefSize(517, 660);
 
         Image MAPScreenImage = loadImage(MAPScreenImagePath);
         MAPScreenImageView = new ImageView(MAPScreenImage);
-        AnchorPane ap =  new AnchorPane();
+        MAPScreenImageView.setFitWidth(517.0);
+        MAPScreenImageView.setFitHeight(660.0);
+      ap =  new AnchorPane();
+        GameScreenPane.getChildren().add(ap);
+        ap.setMaxHeight(660.0);
+        ap.setMaxWidth(517.0);
         
-       
-        GameScreenPane.getChildren().addAll(MAPScreenImageView,ap);
-        StackPane.setAlignment(MAPScreenImageView, Pos.CENTER);
+        ap.toFront();
+        GameScreenPane.getChildren().add(MAPScreenImageView);
         
+ 
+        
+       //ap.getChildren().add(GameScreenPane);
+       // GameScreenPane.setAlignment(MAPScreenImageView,Pos.CENTER);
+        GameScreenPane.setAlignment(ap, Pos.CENTER);
+        
+       // ap.toFront();
         //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String AboutJTEImgName = props.getProperty(JTEPropertyType.ABOUT_JTE_IMG_NAME);
@@ -550,14 +588,16 @@ System.out.println("Print out "+i+"Options");
         selectToolbar.setStyle("-fx-background-color:white");
         
         StackPane cardPane =  new StackPane();
-        
-        
+        Button card = new Button("I am a card dont click me!");
+        card.setStyle("-fx-background-color: transparent");
+        cardPane.getChildren().add(card);
         
         
         mainPane.setRight(selectToolbar);
-        mainPane.setCenter(GameScreenPane);
+       mainPane.setCenter(GameScreenPane);
+        //mainPane.setCenter(ap);
         mainPane.setLeft(cardPane);
-        
+       // mainPane.setLeft(selectToolbar);
         AC14.setOnAction((ActionEvent event) -> {
             eventHandler.respondToSwitchMapRequest(JTEUIState.AC14_MAP_STATE);
         });
@@ -583,11 +623,16 @@ System.out.println("Print out "+i+"Options");
         dice.setOnAction((ActionEvent event) -> {
             eventHandler.respondToRollDiceRequest();
         });
-        
+        //MAPScreenImageView.
         ap.setOnMouseClicked((MouseEvent t) -> {
                       eventHandler.respondToClick(t);
         });
+   
+      
+          
+           
         
+       
         
     }
 
@@ -719,20 +764,107 @@ System.out.println("Print out "+i+"Options");
      *
      * @param link The Web Page to load.
      */
-    public void loadRemoteHelpPage(URL link) {
-        try {
-            // PUT THE WEB PAGE IN THE HELP PANE
-            Document doc = AboutPane.getDocument();
-            doc.putProperty(Document.StreamDescriptionProperty, null);
-            AboutPane.setPage(link);
-        } catch (IOException ioe) {
-            errorHandler.processError(JTEPropertyType.INVALID_URL_ERROR_TEXT);
-        }
-    }
-
+ 
     public Image loadImage(String imageName) {
         Image img = new Image(ImgPath + imageName);
         return img;
+    }
+    
+    public void PlayGame(int Nplayer){
+        ArrayList<City> PlayerCity = new ArrayList();
+        ArrayList<City> PlayerCityPart1=new ArrayList();
+        ArrayList<City> PlayerCityPart2=new ArrayList();
+        ArrayList<City> PlayerCityPart3=new ArrayList();
+        ArrayList<City> PlayerCityPart4=new ArrayList();
+        
+        ArrayList<City> newCity = fl.loadCSVFile();
+       // fl.loadNeighbourCity();
+        
+           
+for(int city = 0; city<178;city++){
+     Random rand = new Random();
+            int value = rand.nextInt(178);
+          System.out.println(value);
+            City a = newCity.get(value);
+            if(a.getPart()==1){
+            System.out.println(a.toString());
+            PlayerCityPart1.add(a);
+            }
+            if(a.getPart()==2){
+            System.out.println(a.toString());
+            PlayerCityPart2.add(a);
+            }
+            if(a.getPart()==3){
+            System.out.println(a.toString());
+            PlayerCityPart3.add(a);
+            }
+            else
+                  PlayerCityPart4.add(a);
+            
+            
+            
+}
+        
+        
+        
+        
+        for (int i = 0; i < Nplayer; i++) {
+           int Ncities = PlayerCityPart1.size();
+           
+           Random rand = new Random();
+           int nc = rand.nextInt(Ncities);
+           
+           City playerC = PlayerCityPart1.get(nc);
+           System.out.println(playerC.toString());
+           PlayerCity.add(playerC);
+            
+            
+        }
+        
+      PropertiesManager props = PropertiesManager.getPropertiesManager();
+    ArrayList<String> PlayerImages = props
+                    .getPropertyOptionsList(JTEPropertyType.PLAYER_IMG_NAMES);
+           //Nplayer
+             for(int h=0;h<Nplayer;h++){
+             String PlayerImageName = PlayerImages.get(h);
+            Image PlayerImage = loadImage(PlayerImageName);
+            ImageView PlayerImageView = new ImageView(PlayerImage);
+             PlayerImageLabel = new Label();
+           PlayerImageLabel.setGraphic(PlayerImageView);
+           
+           
+           
+            City playerc = PlayerCity.get(h);
+            double e = (playerc.getX()-9.5);
+            double d = (playerc.getY()-51);
+            PlayerImageLabel.relocate(e, d);
+            
+            ap.getChildren().add(PlayerImageLabel);
+          ap.toFront();
+           //GameScreenPane.getChildren().add(PlayerImageLabel);
+           //ap.setLayoutX(23.0);
+           PlayerImageLabel.setOnMouseClicked((MouseEvent t) -> {
+                      eventHandler.respondMove(t);
+                      System.out.println("Im a label");
+                      
+                     
+                      
+        });
+           
+               } //FOR LOOP CLOSE HERE
+     
+    }
+     public void Move(double x, double y) {
+          PlayerImageLabel.relocate(x,y);
+                      ap.getChildren().clear();
+                      ap.getChildren().add(PlayerImageLabel);
+                      
+                      ap.toFront();
+           System.out.println("its a label x cor :"+x+" y cor  "+y);
+           
+      
+           
+       
     }
 
 }
