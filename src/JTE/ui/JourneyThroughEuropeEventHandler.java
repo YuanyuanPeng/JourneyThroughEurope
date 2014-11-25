@@ -23,7 +23,9 @@ import properties_manager.PropertiesManager;
 import xml_utilities.InvalidXMLFileFormatException;
 import JTE.file.JourneyThroughEuropeFileLoader;
 import JTE.game.JourneyThroughEuropeGameStateManager;
+import JTE.ui.JourneyThroughEuropeUI.JTEUIState;
 import java.io.FileNotFoundException;
+import java.util.Random;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -40,6 +42,7 @@ public class JourneyThroughEuropeEventHandler {
     private JourneyThroughEuropeFileLoader fl;
     private Button RollingDice;
     private Insets marginlessInsets;
+
     /**
      * Constructor that simply saves the ui for later.
      *
@@ -47,7 +50,7 @@ public class JourneyThroughEuropeEventHandler {
      */
     public JourneyThroughEuropeEventHandler(JourneyThroughEuropeUI initUI) {
         ui = initUI;
-       
+
     }
 
     /**
@@ -72,113 +75,185 @@ public class JourneyThroughEuropeEventHandler {
     }
 
     public void respondToRollDiceRequest() {
-        int diceNum = (int)(Math.random()*6);
+        int diceNum = (int) (Math.random() * 6);
         System.out.println(diceNum);
-        
-         
-       changeDiceImage(diceNum);
-       
 
-        
+        changeDiceImage(diceNum);
+
     }
-    public void changeDiceImage(int NumOnDice){
+
+    public void changeDiceImage(int NumOnDice) {
         switch (NumOnDice) {
-                case 0:
-                    ui.dice.setText("");
-                   SetDiceGraphic(0);
-                    break;
-                case 1:
-                    ui.dice.setText("");
-                    SetDiceGraphic(1);
-                    break;
-                case 2:
-                  ui.dice.setText("");
-                   SetDiceGraphic(2);
-                    break;
-                case 3:
-                   ui.dice.setText("");
-                    SetDiceGraphic(3);
-                    break;
-                case 4:
-                    ui.dice.setText("");
-                    SetDiceGraphic(4);
-                    break;
-                    case 5:
-                    ui.dice.setText("");
-                    SetDiceGraphic(5);
-                    break;
-                default:
+            case 0:
+                ui.dice.setText("");
+                SetDiceGraphic(0);
+                break;
+            case 1:
+                ui.dice.setText("");
+                SetDiceGraphic(1);
+                break;
+            case 2:
+                ui.dice.setText("");
+                SetDiceGraphic(2);
+                break;
+            case 3:
+                ui.dice.setText("");
+                SetDiceGraphic(3);
+                break;
+            case 4:
+                ui.dice.setText("");
+                SetDiceGraphic(4);
+                break;
+            case 5:
+                ui.dice.setText("");
+                SetDiceGraphic(5);
+                break;
+            default:
 
-            }
+        }
     }
-    public void SetDiceGraphic(int x){
-    PropertiesManager props=PropertiesManager.getPropertiesManager();
-    ArrayList<String>DiceGraph = props.getPropertyOptionsList(JTEPropertyType.ROLLING_DICE_IMAGE_NAME);
-    String DiceGraphName = DiceGraph.get(x);
-    Image DiceImage;
+
+    public void SetDiceGraphic(int x) {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        ArrayList<String> DiceGraph = props.getPropertyOptionsList(JTEPropertyType.ROLLING_DICE_IMAGE_NAME);
+        String DiceGraphName = DiceGraph.get(x);
+        Image DiceImage;
         DiceImage = ui.loadImage(DiceGraphName);
-    ImageView DiceImageView = new ImageView(DiceImage);
-    
-    ui.dice.setGraphic(DiceImageView);
-    ui.dice.setStyle("-fx-background-color:transparent");
-    
-   
-    
+        ImageView DiceImageView = new ImageView(DiceImage);
+
+        ui.dice.setGraphic(DiceImageView);
+        ui.dice.setStyle("-fx-background-color:transparent");
+
     }
 
     public void respondToRadioButtonSelection(Stage primaryStage) {
         System.out.println("is a radio button");
     }
 
-   public  void respondToSwitchMapRequest(JourneyThroughEuropeUI.JTEUIState jteuiState)  {
-      switch (jteuiState){
-       case AC14_MAP_STATE:
-              SetMapGraphic(JTEPropertyType.GAME_MAP_AC14_IMAGE_NAME);
-                    break;
-       case DF14_MAP_STATE:
-              SetMapGraphic(JTEPropertyType.GAME_MAP_DF14_IMAGE_NAME);
-           break;
-       case AC58_MAP_STATE:
-              SetMapGraphic(JTEPropertyType.GAME_MAP_AC58_IMAGE_NAME);
-           break;
-       case DF58_MAP_STATE:
-              SetMapGraphic(JTEPropertyType.GAME_MAP_DF58_IMAGE_NAME);
-           break;
-                default:
-      }
+    public void respondToSwitchMapRequest(JourneyThroughEuropeUI.JTEUIState jteuiState) {
+        switch (jteuiState) {
+            case AC14_MAP_STATE:
+                ui.changeWorkspace(JTEUIState.PLAY_GAME_STATE);
+                break;
+            case DF14_MAP_STATE:
+                SetMapGraphic(JTEPropertyType.GAME_MAP_DF14_IMAGE_NAME);
+                break;
+            case AC58_MAP_STATE:
+                SetMapGraphic(JTEPropertyType.GAME_MAP_AC58_IMAGE_NAME);
+                break;
+            case DF58_MAP_STATE:
+                SetMapGraphic(JTEPropertyType.GAME_MAP_DF58_IMAGE_NAME);
+                break;
+            default:
+        }
     }
-   public void SetMapGraphic(JTEPropertyType jtePT) {
-       JourneyThroughEuropeFileLoader fl = new JourneyThroughEuropeFileLoader(ui);
-       System.out.println(jtePT);
-         PropertiesManager props = PropertiesManager.getPropertiesManager();
+
+    public void SetMapGraphic(JTEPropertyType jtePT) {
+        JourneyThroughEuropeFileLoader fl = new JourneyThroughEuropeFileLoader(ui);
+        System.out.println(jtePT);
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
         String MAPScreenPath = props
                 .getProperty(jtePT);
-         
-       //fl.loadCSVFile();
+
+        //fl.loadCSVFile();
         StackPane MapScreen = new StackPane();
-        //MapScreen.setPrefSize(600, 800);
-        AnchorPane aps =  new AnchorPane();
+        
+        MapScreen.setPrefSize(517,660);
+         AnchorPane aps = new AnchorPane();
+          aps.setPrefSize(517.0, 660.0);
+           MapScreen.getChildren().add(aps);
+           
         Image newMAPScreenImage = ui.loadImage(MAPScreenPath);
         ImageView newMAPScreenImageView = new ImageView(newMAPScreenImage);
-        
+        MapScreen.getChildren().add(newMAPScreenImageView);
+     
        
-        MapScreen.getChildren().addAll(newMAPScreenImageView,aps);
-        StackPane.setAlignment(newMAPScreenImageView, Pos.CENTER);
-      
+       
+       
+        
         ui.mainPane.setCenter(MapScreen);
         
-        aps.setOnMouseClicked((MouseEvent me) -> {
-          respondToClick(me);
-       });
+        String DOTImagePath = props
+                .getProperty(JTEPropertyType.DOT_IMG_NAME);
+     
+      
+
+        Image DOTImage = ui.loadImage(DOTImagePath);
+        ImageView DOTImageView = new ImageView(DOTImage);
+
+        Label DOTImageLabel = new Label();
+        DOTImageLabel.setGraphic(DOTImageView);
         
-   }
+        
+        
+        
+         ArrayList<City>check =fl.loadCSVFile();
+         for(int j=0;j<check.size();j++){
+        City city = check.get(j);
+        double d = city.getX();
+        double e = city.getY();
+        
+        int q=city.getPart();
+        
+    }
+        
+        
+       newMAPScreenImageView.setOnMouseClicked((MouseEvent me) -> {
+            respondToClick(me);
+        });
+
+    }
 
     void respondToClick(MouseEvent me) {
         JourneyThroughEuropeFileLoader fl = new JourneyThroughEuropeFileLoader(ui);
-        int x =(int)me.getX();
-        int y =(int)me.getY();
-        //fl.loadCSVFile();
-        System.out.println("x: "+x+"y: "+y);
+        int x = (int) me.getX();
+        int y = (int) me.getY();
+        
+        for(int i=0; i<178;i++){
+       ArrayList<City> checkCity = fl.loadCSVFile();
+       ArrayList<NeighbourCity> ncc = fl.loadNeighbourCity();
+       
+       NeighbourCity neC =ncc.get(i);
+       City city = checkCity.get(i);
+     
+       int d =city.getX() ;
+       int e =city.getY();
+       String csvCity = city.getCityName();
+      String cities =neC.getName();
+    
+      if(((x<d+10)&&(x>d-10))&&( (y<e+10)&&(y>e-10)  )){
       
+      System.out.println("City is: "+city.getCityName());
+      
+     // System.out.println("aaa"+ csvCity+" bbbb"+cities);
+      if(cities == null ? csvCity == null : cities.equals(csvCity)){
+          
+       System.out.println("The City has land neighbours: "+neC.getLand());
+      System.out.println("The City has land neighbours: "+neC.getSea());
+      }
+      
+      }
+ 
+       
+        }
+        //fl.loadCSVFile();
+        System.out.println("x: " + x + "y: " + y);
+      // fl.loadNeighbourCity();
     }
+
+    public void respondToPalayRequest(int n) {
+        ui.PlayGame(n);
+          
+    }
+
+    public void respondMove(MouseEvent t) {
+                     int x =(int) t.getX();
+                     int y =(int) t.getY();
+                    
+        
+        ui.Move(x-9.5, y-51);
+        System.out.println("you are a label");
+    }
+   
+   
 }
