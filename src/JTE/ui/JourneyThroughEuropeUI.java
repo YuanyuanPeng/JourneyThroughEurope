@@ -4,7 +4,7 @@ import application.Main;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import javax.swing.JEditorPane;
 import javax.swing.text.Document;
 import javax.swing.text.html.HTMLDocument;
@@ -15,10 +15,20 @@ import application.Main.JTEPropertyType;
 import java.awt.Canvas;
 import java.awt.Panel;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 import java.util.Random;
-import java.util.Scanner;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javafx.animation.PathTransition;
+import javafx.animation.Timeline;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import properties_manager.PropertiesManager;
@@ -48,9 +58,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.MoveTo;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javax.swing.JScrollPane;
 import javax.xml.stream.XMLStreamException;
 
@@ -60,12 +73,10 @@ import javax.xml.stream.XMLStreamException;
  */
 public class JourneyThroughEuropeUI extends Pane {
 
-   
-
     public enum JTEUIState {
 
         SPLASH_SCREEN_STATE, START_GAME_STATE, PLAY_GAME_STATE, VIEW_ABOUT_STATE, LOAD_HISTORY_STATE,
-        VIEW_AIR_MAP_STATE,AC14_MAP_STATE,DF14_MAP_STATE,AC58_MAP_STATE,DF58_MAP_STATE,
+        VIEW_AIR_MAP_STATE, AC14_MAP_STATE, DF14_MAP_STATE, AC58_MAP_STATE, DF58_MAP_STATE,
     }
 
     // mainStage
@@ -95,7 +106,7 @@ public class JourneyThroughEuropeUI extends Pane {
     private BorderPane SelectionScreenPanel;// top for the combobox and go button
     private HBox SelectionToolbar;
     private Button GOButton;
-    public  ComboBox CB;
+    public ComboBox CB;
 
     //in the center of selectionscreen
     private RadioButton RBC;
@@ -117,11 +128,11 @@ public class JourneyThroughEuropeUI extends Pane {
     private Button AboutJTEButton;
     private Button GameHistoryButton;
     private Button AirMapButton;
-    
-      private Button AC14;//switch pane to ac14
-      private Button DF14;//switch pane to df14
-      private Button AC58;//switch pane to ac58
-      private Button DF58;
+
+    private Button AC14;//switch pane to ac14
+    private Button DF14;//switch pane to df14
+    private Button AC58;//switch pane to ac58
+    private Button DF58;
     //private Button dice;
     public Button dice;
 //buttons for the map
@@ -148,13 +159,14 @@ public class JourneyThroughEuropeUI extends Pane {
 
     // Image path
     private String ImgPath = "file:img/";
+    private String redImgPath = "file:img/red/";
 
     // mainPane weight && height
     private int paneWidth;
     private int paneHeigth;
     public Label PlayerImageLabel;
-    boolean isFromSplashScreen=false;
-    
+    boolean isFromSplashScreen = false;
+
     // THIS CLASS WILL HANDLE ALL ACTION EVENTS FOR THIS PROGRAM
     private JourneyThroughEuropeEventHandler eventHandler;
     private JourneyThroughEuropeErrorHandler errorHandler;
@@ -216,7 +228,7 @@ public class JourneyThroughEuropeUI extends Pane {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String splashScreenImagePath = props
                 .getProperty(JTEPropertyType.SPLASH_SCREEN_IMAGE_NAME);
-      
+
         StackPane splashScreenPane = new StackPane();
         splashScreenPane.setPrefSize(827, 622);
 
@@ -242,7 +254,7 @@ public class JourneyThroughEuropeUI extends Pane {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String title = props.getProperty(JTEPropertyType.GAME_TITLE_TEXT);
         primaryStage.setTitle(title);
-  
+
     }
 
     private void initOptionToolbar() {
@@ -252,7 +264,7 @@ public class JourneyThroughEuropeUI extends Pane {
         OptionToolbar.setPadding(marginlessInsets);
         OptionToolbar.setAlignment(Pos.CENTER);
        //set the StartButton to the SplashScreen
-        
+
         StartButton = initToolbarButton(OptionToolbar, JTEPropertyType.START_IMG_NAME);
         //setTooltip(StartButton,JTEPropertyType.START_TOOLTIP);
         StartButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -275,19 +287,18 @@ public class JourneyThroughEuropeUI extends Pane {
                 eventHandler.respondToSwitchScreenRequest(JTEUIState.LOAD_HISTORY_STATE);
             }
 
-       });
+        });
 
         /*
          set the AboutButton to SplashScreen
          */
-        
         AboutButton = initToolbarButton(OptionToolbar, JTEPropertyType.ABOUT_IMG_NAME);
         //setTooltip(StartButton,JTEPropertyType.ABOUT_TOOLTIP);
         AboutButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                
+
                 eventHandler.respondToSwitchScreenRequest(JTEUIState.VIEW_ABOUT_STATE);
             }
 
@@ -324,13 +335,12 @@ public class JourneyThroughEuropeUI extends Pane {
         return button;
     }
 
- 
     private void initAboutPane() {
         System.out.println("aboutpane");
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String aboutScreenImagePath = props
                 .getProperty(JTEPropertyType.ABOUT_SCREEN_IMAGE_NAME);
-               // splashScreenPane = new Pane();
+        // splashScreenPane = new Pane();
         StackPane aboutScreenPane = new StackPane();
         aboutScreenPane.setPrefSize(827, 622);
         Image aboutScreenImage = loadImage(aboutScreenImagePath);
@@ -358,23 +368,23 @@ public class JourneyThroughEuropeUI extends Pane {
 
         mainPane.setBottom(aboutToolbar);
         mainPane.setCenter(aboutScreenPane);
-if(isFromSplashScreen=true){
-        OKButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                                eventHandler.respondToSwitchScreenRequest(JTEUIState.SPLASH_SCREEN_STATE);
-                         }
+        if (isFromSplashScreen = true) {
+            OKButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    eventHandler.respondToSwitchScreenRequest(JTEUIState.SPLASH_SCREEN_STATE);
+                }
 
-        });
-}
-else{
- OKButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                                eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);          
-            }
+            });
+        } else {
+            OKButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);
+                }
 
-        });}
+            });
+        }
     }
 
     private void initSelectionScreenPane() {
@@ -411,7 +421,7 @@ else{
         HBox selectToolbar = new HBox();
         // AboutPanel=new BorderPane();
 
-   CB = new ComboBox();
+        CB = new ComboBox();
         CB.getItems().addAll(2, 3, 4, 5, 6);
         CB.setValue(" 2 ");
 
@@ -440,42 +450,40 @@ else{
 
         });
 
-       
-            
         selectToolbar.getChildren().addAll(CB, GOButton);
         selectToolbar.setStyle("-fx-background-color:white");
         mainPane.setTop(selectToolbar);
         GOButton.setOnAction((ActionEvent event) -> {
             eventHandler.respondToSwitchScreenRequest(JTEUIState.PLAY_GAME_STATE);
-                     Object player = CB.getSelectionModel().getSelectedItem();
+            Object player = CB.getSelectionModel().getSelectedItem();
             String NumOfPlayer = player.toString();
-          switch (NumOfPlayer) {
+            switch (NumOfPlayer) {
                 case "2":
-                     eventHandler.respondToPalayRequest(2);
+                    eventHandler.respondToPalayRequest(2);
                     break;
                 case "3":
-                     eventHandler.respondToPalayRequest(3);
+                    eventHandler.respondToPalayRequest(3);
                     break;
                 case "4":
-                     eventHandler.respondToPalayRequest(4);
+                    eventHandler.respondToPalayRequest(4);
                     break;
                 case "5":
-                     eventHandler.respondToPalayRequest(5);
+                    eventHandler.respondToPalayRequest(5);
                     break;
                 case "6":
-                     eventHandler.respondToPalayRequest(6);
+                    eventHandler.respondToPalayRequest(6);
                     break;
                 default:
 
             }
-          
+
         });
     }
 
     private void initSeletOptions(int n) {
         GridPane playerSelectionGridPane = new GridPane();
-            for (int i = 0; i < n; i++) {
-System.out.println("Print out "+i+"Options");
+        for (int i = 0; i < n; i++) {
+            System.out.println("Print out " + i + "Options");
             PropertiesManager props = PropertiesManager.getPropertiesManager();
             ArrayList<String> flagImages = props
                     .getPropertyOptionsList(JTEPropertyType.FLAG_IMG_NAMES);
@@ -491,17 +499,17 @@ System.out.println("Print out "+i+"Options");
             RBC = new RadioButton("Computer");
             RBP = new RadioButton("Player");
             TF = new TextField("Player" + num);
-           
+
             RBC.setOnAction((ActionEvent event) -> {
                 isComputer = true;
-               // RBP.setDisable(true);
+                // RBP.setDisable(true);
                 eventHandler.respondToRadioButtonSelection(primaryStage);
-});
+            });
             RBP.setOnAction((ActionEvent event) -> {
                 isPerson = true;
-              //  RBC.setDisable(true);
+                //  RBC.setDisable(true);
                 eventHandler.respondToRadioButtonSelection(primaryStage);
-});
+            });
             opVBox.getChildren().addAll(flagScreenImageLael, RBC, RBP, TF);
             if (n < 4) {
                 playerSelectionGridPane.add(opVBox, i, 0);
@@ -518,7 +526,7 @@ System.out.println("Print out "+i+"Options");
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String MAPScreenImagePath = props
                 .getProperty(JTEPropertyType.GAME_MAP_AC14_IMAGE_NAME);
-         //fl.loadNeighbourCity();
+        fl.loadNeighbourCity();
         GameScreenPane = new StackPane();
         GameScreenPane.setPrefSize(517, 660);
 
@@ -526,21 +534,19 @@ System.out.println("Print out "+i+"Options");
         MAPScreenImageView = new ImageView(MAPScreenImage);
         MAPScreenImageView.setFitWidth(517.0);
         MAPScreenImageView.setFitHeight(660.0);
-      ap =  new AnchorPane();
+        ap = new AnchorPane();
         GameScreenPane.getChildren().add(ap);
         ap.setMaxHeight(660.0);
         ap.setMaxWidth(517.0);
-        
+
         ap.toFront();
         GameScreenPane.getChildren().add(MAPScreenImageView);
-        
- 
-        
+
        //ap.getChildren().add(GameScreenPane);
-       // GameScreenPane.setAlignment(MAPScreenImageView,Pos.CENTER);
+        // GameScreenPane.setAlignment(MAPScreenImageView,Pos.CENTER);
         GameScreenPane.setAlignment(ap, Pos.CENTER);
-        
-       // ap.toFront();
+
+        // ap.toFront();
         //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String AboutJTEImgName = props.getProperty(JTEPropertyType.ABOUT_JTE_IMG_NAME);
@@ -551,7 +557,7 @@ System.out.println("Print out "+i+"Options");
         AboutJTEButton.setGraphic(AboutJTEImgIcon);
         AboutJTEButton.setPadding(marginlessInsets);
         AboutJTEButton.setStyle("-fx-background-color:transparent");
-        
+
         String HistoryImgName = props.getProperty(JTEPropertyType.GAME_HISTORY_IMAGE_NAME);
         Image HistoryImg = loadImage(HistoryImgName);
         ImageView HistoryImgIcon = new ImageView(HistoryImg);
@@ -559,7 +565,7 @@ System.out.println("Print out "+i+"Options");
         GameHistoryButton.setGraphic(HistoryImgIcon);
         GameHistoryButton.setPadding(marginlessInsets);
         GameHistoryButton.setStyle("-fx-background-color:transparent");
-        
+
         String airImgName = props.getProperty(JTEPropertyType.AIR_MAP_IMG_NAME);
         Image airImg = loadImage(airImgName);
         ImageView airImgIcon = new ImageView(airImg);
@@ -567,50 +573,49 @@ System.out.println("Print out "+i+"Options");
         AirMapButton.setGraphic(airImgIcon);
         AirMapButton.setPadding(marginlessInsets);
         AirMapButton.setStyle("-fx-background-color:transparent");
-        
+
         dice = new Button(" Click to Roll the Dice");
-        
+
         GridPane GridMap = new GridPane();
-        
-         AC14= new Button("AC14");//switch pane to ac14
-        DF14= new Button("DF14");//switch pane to df14
-         AC58= new Button ("AC58");//switch pane to ac58
-        DF58=new Button ("DF58");//switch pane to df58
-      
+
+        AC14 = new Button("AC14");//switch pane to ac14
+        DF14 = new Button("DF14");//switch pane to df14
+        AC58 = new Button("AC58");//switch pane to ac58
+        DF58 = new Button("DF58");//switch pane to df58
+
         //playerSelectionGridPane.add(opVBox, i, 0);
-        GridMap.add(AC14,0,0);
-        GridMap.add(DF14,1,0);
-        GridMap.add(AC58,0,1);
-        GridMap.add(DF58,1,1);
-        
+        GridMap.add(AC14, 0, 0);
+        GridMap.add(DF14, 1, 0);
+        GridMap.add(AC58, 0, 1);
+        GridMap.add(DF58, 1, 1);
+
         VBox selectToolbar = new VBox();
-        selectToolbar.getChildren().addAll(dice, GridMap,AirMapButton, AboutJTEButton, GameHistoryButton);
+        selectToolbar.getChildren().addAll(dice, GridMap, AirMapButton, AboutJTEButton, GameHistoryButton);
         selectToolbar.setStyle("-fx-background-color:white");
-        
-        StackPane cardPane =  new StackPane();
-        Button card = new Button("I am a card dont click me!");
-        card.setStyle("-fx-background-color: transparent");
-        cardPane.getChildren().add(card);
-        
-        
+
+      //  StackPane cardPane =  new StackPane();
+        //Button card = new Button("I am a card dont click me!");
+        //card.setStyle("-fx-background-color: transparent");
+        //cardPane.getChildren().add(card);
+        //mainPane.setLeft(cardPane);
         mainPane.setRight(selectToolbar);
-       mainPane.setCenter(GameScreenPane);
+        mainPane.setCenter(GameScreenPane);
         //mainPane.setCenter(ap);
-        mainPane.setLeft(cardPane);
-       // mainPane.setLeft(selectToolbar);
+
+        // mainPane.setLeft(selectToolbar);
         AC14.setOnAction((ActionEvent event) -> {
             eventHandler.respondToSwitchMapRequest(JTEUIState.AC14_MAP_STATE);
         });
         DF14.setOnAction((ActionEvent event) -> {
-                    eventHandler.respondToSwitchMapRequest(JTEUIState.DF14_MAP_STATE);
+            eventHandler.respondToSwitchMapRequest(JTEUIState.DF14_MAP_STATE);
         });
         AC58.setOnAction((ActionEvent event) -> {
-                    eventHandler.respondToSwitchMapRequest(JTEUIState.AC58_MAP_STATE);
+            eventHandler.respondToSwitchMapRequest(JTEUIState.AC58_MAP_STATE);
         });
         DF58.setOnAction((ActionEvent event) -> {
             eventHandler.respondToSwitchMapRequest(JTEUIState.DF58_MAP_STATE);
-        });        
-       
+        });
+
         AboutJTEButton.setOnAction((ActionEvent event) -> {
             eventHandler.respondToSwitchScreenRequest(JTEUIState.VIEW_ABOUT_STATE);
         });
@@ -625,15 +630,9 @@ System.out.println("Print out "+i+"Options");
         });
         //MAPScreenImageView.
         ap.setOnMouseClicked((MouseEvent t) -> {
-                      eventHandler.respondToClick(t);
+            eventHandler.respondToClick(t);
         });
-   
-      
-          
-           
-        
-       
-        
+
     }
 
     private void initLoadPane() {
@@ -642,7 +641,7 @@ System.out.println("Print out "+i+"Options");
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String loadScreenImagePath = props
                 .getProperty(JTEPropertyType.ABOUT_SCREEN_IMAGE_NAME);
-        
+
         StackPane loadScreenPane = new StackPane();
 
         String OKImgName = props.getProperty(JTEPropertyType.OK_IMG_NAME);
@@ -667,6 +666,7 @@ System.out.println("Print out "+i+"Options");
 
         });
     }
+
     private void initAIRPane() {
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -687,7 +687,7 @@ System.out.println("Print out "+i+"Options");
         // the pane
         AIRScreenPane.getChildren().add(AIRScreenImageLabel);
         StackPane.setAlignment(AIRScreenImageLabel, Pos.CENTER);
-       //Make the tool bar which will return to the main pain 
+        //Make the tool bar which will return to the main pain 
         //  PropertiesManager props = PropertiesManager.getPropertiesManager();
         String OKImgName = props.getProperty(JTEPropertyType.OK_IMG_NAME);
         Image OKImg = loadImage(OKImgName);
@@ -742,7 +742,7 @@ System.out.println("Print out "+i+"Options");
                 mainPane.getChildren().clear();
                 initLoadPane();
                 break;
-            
+
             default:
         }
     }
@@ -764,107 +764,185 @@ System.out.println("Print out "+i+"Options");
      *
      * @param link The Web Page to load.
      */
- 
     public Image loadImage(String imageName) {
         Image img = new Image(ImgPath + imageName);
         return img;
     }
-    
-    public void PlayGame(int Nplayer){
+
+    public void PlayGame(int Nplayer) {
+
         ArrayList<City> PlayerCity = new ArrayList();
-        ArrayList<City> PlayerCityPart1=new ArrayList();
-        ArrayList<City> PlayerCityPart2=new ArrayList();
-        ArrayList<City> PlayerCityPart3=new ArrayList();
-        ArrayList<City> PlayerCityPart4=new ArrayList();
-        
+        ArrayList<City> PlayerCityPart1 = new ArrayList();
+        ArrayList<City> PlayerCityPart2 = new ArrayList();
+        ArrayList<City> PlayerCityPart3 = new ArrayList();
+        ArrayList<City> PlayerCityPart4 = new ArrayList();
+
         ArrayList<City> newCity = fl.loadCSVFile();
        // fl.loadNeighbourCity();
-        
-           
-for(int city = 0; city<178;city++){
-     Random rand = new Random();
+
+        //StackPane cardPane =  new StackPane();
+        //       GridPane cardPane = new GridPane();
+        AnchorPane cardPane = new AnchorPane();
+        cardPane.setPrefSize(300, 660.0);
+
+        mainPane.setLeft(cardPane);
+
+        for (int city = 0; city < 178; city++) {
+            Random rand = new Random();
             int value = rand.nextInt(178);
-          System.out.println(value);
+         //   System.out.println(value);
             City a = newCity.get(value);
-            if(a.getPart()==1){
-            System.out.println(a.toString());
-            PlayerCityPart1.add(a);
+            if (a.getPart() == 1) {
+               // System.out.println(a.toString());
+                PlayerCityPart1.add(a);
             }
-            if(a.getPart()==2){
-            System.out.println(a.toString());
-            PlayerCityPart2.add(a);
+            if (a.getPart() == 2) {
+             //   System.out.println(a.toString());
+                PlayerCityPart2.add(a);
             }
-            if(a.getPart()==3){
-            System.out.println(a.toString());
-            PlayerCityPart3.add(a);
+            if (a.getPart() == 3) {
+             //   System.out.println(a.toString());
+                PlayerCityPart3.add(a);
+            } else {
+                PlayerCityPart4.add(a);
             }
-            else
-                  PlayerCityPart4.add(a);
-            
-            
-            
-}
-        
-        
-        
-        
-        for (int i = 0; i < Nplayer; i++) {
-           int Ncities = PlayerCityPart1.size();
-           
-           Random rand = new Random();
-           int nc = rand.nextInt(Ncities);
-           
-           City playerC = PlayerCityPart1.get(nc);
-           System.out.println(playerC.toString());
-           PlayerCity.add(playerC);
-            
-            
+
         }
-        
-      PropertiesManager props = PropertiesManager.getPropertiesManager();
-    ArrayList<String> PlayerImages = props
-                    .getPropertyOptionsList(JTEPropertyType.PLAYER_IMG_NAMES);
-           //Nplayer
-             for(int h=0;h<Nplayer;h++){
-             String PlayerImageName = PlayerImages.get(h);
+
+        for (int i = 0; i < Nplayer; i++) {
+            int Ncities = PlayerCityPart1.size();
+
+            Random rand = new Random();
+            int nc = rand.nextInt(Ncities);
+
+            City playerC = PlayerCityPart1.get(nc);
+            System.out.println(playerC.toString());
+            PlayerCity.add(playerC);
+
+        }
+
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        ArrayList<String> PlayerImages = props
+                .getPropertyOptionsList(JTEPropertyType.PLAYER_IMG_NAMES);
+        ArrayList<String> RedCardsImages = props.getPropertyOptionsList(JTEPropertyType.RED_CARDS_IMG_NAME);
+        ArrayList<String> GreCardsImages = props.getPropertyOptionsList(JTEPropertyType.GRE_CARDS_IMG_NAME);
+        ArrayList<String> YelCardsImages = props.getPropertyOptionsList(JTEPropertyType.YEL_CARDS_IMG_NAME);
+
+        //Nplayer
+        for (int h = 0; h < Nplayer; h++) {
+            String PlayerImageName = PlayerImages.get(h);
             Image PlayerImage = loadImage(PlayerImageName);
             ImageView PlayerImageView = new ImageView(PlayerImage);
-             PlayerImageLabel = new Label();
-           PlayerImageLabel.setGraphic(PlayerImageView);
-           
-           
-           
+            PlayerImageLabel = new Label();
+            PlayerImageLabel.setGraphic(PlayerImageView);
+
+            Random rand = new Random();
+            int a = rand.nextInt(59);
+            String cardsImageName1 = RedCardsImages.get(a);
+            Random randb = new Random();
+            int b = randb.nextInt(58);
+            String cardsImageName2 = GreCardsImages.get(b);
+            Random randc = new Random();
+            int c = randc.nextInt(58);
+            String cardsImageName3 = YelCardsImages.get(c);
+
+            Image cardsImage1 = loadImage(cardsImageName1);
+            Image cardsImage2 = loadImage(cardsImageName2);
+            Image cardsImage3 = loadImage(cardsImageName3);
+
+            ImageView cardsImageView1 = new ImageView(cardsImage1);
+            ImageView cardsImageView2 = new ImageView(cardsImage2);
+            ImageView cardsImageView3 = new ImageView(cardsImage3);
+
+            cardsImageView1.setFitWidth(225);
+            cardsImageView1.setFitHeight(320);
+
+            cardsImageView2.setFitWidth(225);
+            cardsImageView2.setFitHeight(320);
+
+            cardsImageView3.setFitWidth(225);
+            cardsImageView3.setFitHeight(320);
+
+            Label cardsImageLabel1 = new Label();
+            cardsImageLabel1.setGraphic(cardsImageView1);
+            Label cardsImageLabel2 = new Label();
+            cardsImageLabel2.setGraphic(cardsImageView2);
+            Label cardsImageLabel3 = new Label();
+            cardsImageLabel3.setGraphic(cardsImageView3);
+
+            cardsImageLabel1.relocate(37.5, 0.0);
+            cardsImageLabel2.relocate(37.5, 60.0);
+            cardsImageLabel3.relocate(37.5, 120.0);
+
+            AnchorPane one = new AnchorPane();
+            AnchorPane two = new AnchorPane();
+            AnchorPane three = new AnchorPane();
+            one.getChildren().add(cardsImageLabel1);
+            two.getChildren().add(cardsImageLabel2);
+            three.getChildren().add(cardsImageLabel3);
+
+            cardPane.getChildren().addAll(one, two, three);
+
             City playerc = PlayerCity.get(h);
-            double e = (playerc.getX()-9.5);
-            double d = (playerc.getY()-51);
+            double e = (playerc.getX() - 9.5);
+            double d = (playerc.getY() - 51);
             PlayerImageLabel.relocate(e, d);
-            
+
             ap.getChildren().add(PlayerImageLabel);
-          ap.toFront();
+            ap.toFront();
            //GameScreenPane.getChildren().add(PlayerImageLabel);
-           //ap.setLayoutX(23.0);
-           PlayerImageLabel.setOnMouseClicked((MouseEvent t) -> {
-                      eventHandler.respondMove(t);
-                      System.out.println("Im a label");
-                      
-                     
-                      
-        });
-           
-               } //FOR LOOP CLOSE HERE
-     
-    }
-     public void Move(double x, double y) {
-          PlayerImageLabel.relocate(x,y);
-                      ap.getChildren().clear();
-                      ap.getChildren().add(PlayerImageLabel);
-                      
-                      ap.toFront();
-           System.out.println("its a label x cor :"+x+" y cor  "+y);
-           
-      
-           
+            //ap.setLayoutX(23.0);
        
+            ap.setOnMouseClicked((MouseEvent t) -> {
+           
+               
+              ArrayList <Integer> coor = new ArrayList();
+               coor =eventHandler.respondToClick(t);
+                 System.out.println("coor: "+coor.toString());
+             int newX  =  coor.get(0);
+            int newY  =  coor.get(1);
+                PlayerImageLabel.relocate(newX-9.5, newY-51);
+                System.out.println("Im a new label");
+                ap.getChildren().clear();
+        ap.getChildren().add(PlayerImageLabel);
+
+       ap.toFront();
+
+            });
+            
+            
+            ap.setOnMousePressed((MouseEvent t) -> {
+                System.out.println("Pressed");
+            
+
+            });
+            ap.setOnMouseReleased((MouseEvent t)-> {
+                System.out.println("Released");
+              ArrayList <Integer> coor = new ArrayList();
+               coor =eventHandler.respondToClick(t);
+                 System.out.println("coor: "+coor.toString());
+             int newX  =  coor.get(0);
+            int newY  =  coor.get(1);
+                PlayerImageLabel.relocate(newX-9.5, newY-51);
+                System.out.println("Im a new label");
+                ap.getChildren().clear();
+        ap.getChildren().add(PlayerImageLabel);
+
+       ap.toFront();
+            
+            
+            });
+            
+            
+
+        } //FOR LOOP CLOSE HERE
+
+    }
+
+    public void Move(double x, double y) {
+        PlayerImageLabel.relocate(x, y);
+       
+
     }
 
 }

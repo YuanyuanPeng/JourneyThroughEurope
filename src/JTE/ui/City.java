@@ -5,6 +5,9 @@
  */
 package JTE.ui;
 
+import JTE.file.JourneyThroughEuropeFileLoader;
+import java.util.ArrayList;
+
 /**
  *
  * @author peng
@@ -17,8 +20,11 @@ public class City {
     private int CityY;
     boolean hasSeaRoute;
     boolean hasAirport;
+    private JourneyThroughEuropeFileLoader fl; 
+    private JourneyThroughEuropeUI ui;
     
-    public City(){
+    public City(JourneyThroughEuropeUI initUI){
+        ui=initUI;
     CityName="";
     CityColor="";
     Part=0;
@@ -35,7 +41,7 @@ public class City {
     this.hasSeaRoute=hasSeaRoute;
     this.hasAirport=hasAirport;
     }
-
+   
     public void setName(String text) {
        CityName=text;
     }
@@ -72,6 +78,7 @@ public class City {
     public int getY(){
     return CityY;
     }
+  
     
     @Override
     public String toString(){

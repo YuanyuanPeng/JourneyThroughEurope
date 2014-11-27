@@ -38,9 +38,10 @@ public class JourneyThroughEuropeFileLoader {
 
     private JourneyThroughEuropeUI ui;
     private String FilePath = "data/";
-    private String CName="";
+    private String CName = "";
     private ArrayList<String> land;
     private ArrayList<String> sea;
+    private ArrayList<NeighbourCity> neighbours;
 
     public JourneyThroughEuropeFileLoader(JourneyThroughEuropeUI initUI) {
         ui = initUI;
@@ -50,7 +51,6 @@ public class JourneyThroughEuropeFileLoader {
     // set up an array for the value of city
     // static String[][]csvToArray;
 //public static void 
-
     public ArrayList<City> loadCSVFile() {
         ArrayList<City> cities = new ArrayList();
 
@@ -62,8 +62,8 @@ public class JourneyThroughEuropeFileLoader {
         try {
 
             Scanner fromFile = new Scanner(new BufferedReader(new FileReader(fileName)));
-            int CityX=0;
-            int CityY=0;
+            int CityX = 0;
+            int CityY = 0;
             //String b[]=null;
             while (fromFile.hasNextLine()) {
 
@@ -77,35 +77,31 @@ public class JourneyThroughEuropeFileLoader {
                 int p = Integer.parseInt(c[2]);
                 int x = Integer.parseInt(c[3]);
                 int y = Integer.parseInt(c[4]);
-                switch (p){
+                switch (p) {
                     case 1:
-                        CityX =(int) ((x * 517)/2010);
-                        CityY =(int) ((y * 660)/ 2569);
+                        CityX = (int) ((x * 517) / 2010);
+                        CityY = (int) ((y * 660) / 2569);
                         break;
                     case 2:
-                         CityX = (int)((x * 517) / 1903);
-                         CityY = (int)((y * 660) / 2585);
+                        CityX = (int) ((x * 517) / 1903);
+                        CityY = (int) ((y * 660) / 2585);
                         break;
                     case 3:
-                         CityX = (int)((x * 517) / 1985);
-                        CityY = (int)((y * 660) / 2585);
+                        CityX = (int) ((x * 517) / 1985);
+                        CityY = (int) ((y * 660) / 2585);
                         break;
                     case 4:
-                         CityX = (int)((x * 517) / 1972);
-                        CityY = (int)((y * 660) / 2583);
+                        CityX = (int) ((x * 517) / 1972);
+                        CityY = (int) ((y * 660) / 2583);
                         break;
                     default:
-                
+
                 }
-                
 
-            
                 //System.out.println(a+","+b+","+p+","+ CityX+","+CityY);
-
                 City city = new City(a, b, p, CityX, CityY);
-                
+
                 cities.add(city);
-               
 
             }
 
@@ -116,114 +112,108 @@ public class JourneyThroughEuropeFileLoader {
         //    System.out.println(cities);
         return cities;
     }
-    public ArrayList<NeighbourCity>loadNeighbourCity(){
-    ArrayList<NeighbourCity> neighbours = new ArrayList();
-    
-    
+
+    public ArrayList<NeighbourCity> loadNeighbourCity() {
+  
         String fileName = "cities.xml";
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         fileName = props.getProperty(JTEPropertyType.DATA_PATH) + fileName;
-    
-    
-    try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(new File(fileName));
-			Node root = doc.getElementsByTagName("routes").item(0);
-			NodeList cardlist = root.getChildNodes();
-                        
-                         NeighbourCity nc;
-                        
-			for (int i = 0; i < cardlist.getLength(); i++) {
-				Node cardNode = cardlist.item(i);
-				if (cardNode.getNodeType() == Node.ELEMENT_NODE) {
-					NodeList cardAttrs = cardNode.getChildNodes();
-					// one card
-					for (int j = 0; j < cardAttrs.getLength(); j++) {
-						if (cardAttrs.item(j).getNodeType() == Node.ELEMENT_NODE) {
-							Node theNode = cardAttrs.item(j);
-							switch (theNode.getNodeName()) {
-                                                            
-							case "name":
-                                                              CName =theNode.getTextContent();
-                                                            
-								//System.out.println("City name: "
-								//		+ theNode.getTextContent());
-                                                                //nc.setName(CName);
-                                                                        break;
-							case "land":
-								NodeList landList = theNode.getChildNodes();
-                                                                String lands = "";
-                                                                land = new ArrayList();
-								for (int k = 0; k < landList.getLength(); k++) {
-									if (landList.item(k).getNodeType() == Node.ELEMENT_NODE) {
-                                                                          //  ArrayList<String> land = new ArrayList();
-                                                                          
-                                                                            lands = landList.item(k).getTextContent();
-                                                                        land.add(lands);
-                                                                          
-                                                                            //land.add(landList.item(k).getTextContent());
-                                                                          
-										//System.out.println("Land neighbour: "
-										//		+ landList.item(k)
-										//				.getTextContent());
-									}
-								}
-                                                                 //nc.setLand(land);
-                                                                //System.out.println("Array of land: "+land.toString());
-								break;
-							case "sea":
-								NodeList seaList = theNode.getChildNodes();
-                                                                String seas="";
-                                                                sea = new ArrayList();								
-                                                                for (int k = 0; k < seaList.getLength(); k++) {
-									if (seaList.item(k).getNodeType() == Node.ELEMENT_NODE) {
-                                                                            //ArrayList<String> sea = new ArrayList();
-                                                                           seas=seaList.item(k).getTextContent();
-                                                                           // sea.add(seaList.item(k).getTextContent());
-                                                                          
-										//System.out.println("Sea neighbour: "
-										//		+ seaList.item(k)
-										//				.getTextContent());
-									sea.add(seas);
-                                                                        
-                                                                        }
-								}
-                                                                //nc.setSea(sea);
-                                                               // System.out.println("Array of sea: "+sea.toString());
-								break;
-                                                           
-                                                               
-                                                             
-							}
-                                                        nc = new NeighbourCity(CName, land, sea);
-                                                     //System.out.println(" "+nc.toString());
-						}
-					
-                                         //System.out.println(" "+nc.toString());
-                                                
-                                       
-                                        }
-                                    // neighbours.add(nc);
-                             //   System.out.println(neighbours.toString());   
-				}
-                                nc = new NeighbourCity(CName, land, sea);
-                               // System.out.println("test: " + nc.toString());
-                                
-                                neighbours.add(nc);
-                                
-                               // System.out.println(neighbours.toString()); 
-			}
-                        
 
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			e.printStackTrace();
-		}
-    
-    
-    
-    return  neighbours;
+        try {
+            neighbours = new ArrayList();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(new File(fileName));
+            Node root = doc.getElementsByTagName("routes").item(0);
+            NodeList cardlist = root.getChildNodes();
+
+            NeighbourCity nc = new NeighbourCity(CName, land, sea);
+
+            for (int i = 0; i < cardlist.getLength(); i++) {
+               //  NeighbourCity nc = new NeighbourCity(CName, land, sea);
+                Node cardNode = cardlist.item(i);
+                if (cardNode.getNodeType() == Node.ELEMENT_NODE) {
+                    NodeList cardAttrs = cardNode.getChildNodes();
+                    // one card
+                    for (int j = 0; j < cardAttrs.getLength(); j++) {
+                        if (cardAttrs.item(j).getNodeType() == Node.ELEMENT_NODE) {
+                            Node theNode = cardAttrs.item(j);
+                            switch (theNode.getNodeName()) {
+
+                                case "name":
+                                    CName = theNode.getTextContent();
+                                    nc.setName(CName);
+								//System.out.println("City name: "
+                                    //		+ theNode.getTextContent());
+                                    //nc.setName(CName);
+                                    break;
+                                case "land":
+                                    NodeList landList = theNode.getChildNodes();
+                                    String lands = "";
+                                    land = new ArrayList();
+                                    for (int k = 0; k < landList.getLength(); k++) {
+                                        if (landList.item(k).getNodeType() == Node.ELEMENT_NODE) {
+                                                                          //  ArrayList<String> land = new ArrayList();
+
+                                            lands = landList.item(k).getTextContent();
+                                            land.add(lands);
+                                            nc.setLand(land);
+                                                                            //land.add(landList.item(k).getTextContent());
+
+										//System.out.println("Land neighbour: "
+                                            //		+ landList.item(k)
+                                            //				.getTextContent());
+                                        }
+                                    }
+                                                                 //nc.setLand(land);
+                                    //System.out.println("Array of land: "+land.toString());
+                                    break;
+                                case "sea":
+                                    NodeList seaList = theNode.getChildNodes();
+                                    String seas = "";
+                                    sea = new ArrayList();
+                                    for (int k = 0; k < seaList.getLength(); k++) {
+                                        if (seaList.item(k).getNodeType() == Node.ELEMENT_NODE) {
+                                            //ArrayList<String> sea = new ArrayList();
+                                            seas = seaList.item(k).getTextContent();
+                                                                           // sea.add(seaList.item(k).getTextContent());
+
+										//System.out.println("Sea neighbour: "
+                                            //		+ seaList.item(k)
+                                            //				.getTextContent());
+                                            sea.add(seas);
+                                            nc.setSea(sea);
+                                        }
+                                    }
+                                                             
+                               
+                                    break;
+
+                            }
+
+                                                       // nc = new NeighbourCity(CName, land, sea);
+                            // System.out.println(" "+nc.toString());
+                        }
+
+                                         //System.out.println(" "+nc.toString());
+                    }
+                                    // neighbours.add(nc);
+                    //   System.out.println(neighbours.toString());   
+                }
+                
+                nc = new NeighbourCity(CName, land, sea);
+               // System.out.println("test: " + nc.toString());
+             neighbours.add(nc);
+                               //nc arraylist
+            }
+
+         
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+        }
+       // System.out.println("neighbours list  :"+neighbours.toString());
+        return neighbours;
     }
 
     public static String loadTextFile(String fileName) throws IOException {

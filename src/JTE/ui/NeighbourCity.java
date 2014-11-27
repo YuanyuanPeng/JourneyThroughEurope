@@ -16,14 +16,7 @@ public class NeighbourCity {
     private ArrayList <String> land;
     private ArrayList<String> sea;
     
-    
-    public NeighbourCity(){
-        
-    this.CityName=CityName;
-    this.land=land;
-    this.sea=sea;
-    
-    }
+
     
     public NeighbourCity(String CityName, ArrayList<String> land, ArrayList<String>sea){
         

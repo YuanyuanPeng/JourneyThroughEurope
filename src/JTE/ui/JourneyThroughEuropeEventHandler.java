@@ -204,41 +204,59 @@ public class JourneyThroughEuropeEventHandler {
 
     }
 
-    void respondToClick(MouseEvent me) {
+   public ArrayList<Integer>  respondToClick(MouseEvent me) {
         JourneyThroughEuropeFileLoader fl = new JourneyThroughEuropeFileLoader(ui);
         int x = (int) me.getX();
         int y = (int) me.getY();
-        
+        ArrayList<Integer> coordinate=new ArrayList();
         for(int i=0; i<178;i++){
        ArrayList<City> checkCity = fl.loadCSVFile();
-       ArrayList<NeighbourCity> ncc = fl.loadNeighbourCity();
        
-       NeighbourCity neC =ncc.get(i);
+      
+       
+      
        City city = checkCity.get(i);
      
        int d =city.getX() ;
        int e =city.getY();
-       String csvCity = city.getCityName();
-      String cities =neC.getName();
+     
+      
     
       if(((x<d+10)&&(x>d-10))&&( (y<e+10)&&(y>e-10)  )){
       
       System.out.println("City is: "+city.getCityName());
+      String csvvCity=city.getCityName();
       
-     // System.out.println("aaa"+ csvCity+" bbbb"+cities);
-      if(cities == null ? csvCity == null : cities.equals(csvCity)){
-          
-       System.out.println("The City has land neighbours: "+neC.getLand());
-      System.out.println("The City has land neighbours: "+neC.getSea());
+       coordinate.add(city.getX());
+      coordinate.add(city.getY());
+      boolean isFirst=true;
+      for(int n =0;n<178;n++){
+         String a = csvvCity;
+       ArrayList<NeighbourCity> ncc = fl.loadNeighbourCity();
+       NeighbourCity neC =ncc.get(n);
+         
+        String Neighbourcities =neC.getName();
+        
+     if(a.equals(Neighbourcities) && isFirst==true){
+         System.out.println("THE CITY IS:"+ Neighbourcities);
+         System.out.println("Land neighbours are: "+neC.getLand());             
+         System.out.println("Sea  neighbours are: "+neC.getSea());
+        isFirst=false;
+         }
+         
+      }
+        //  System.out.println(city.getX()+"   aaa   "+city.getY());
+    
+     
+     
+      
       }
       
-      }
  
        
         }
-        //fl.loadCSVFile();
-        System.out.println("x: " + x + "y: " + y);
-      // fl.loadNeighbourCity();
+     //  System.out.println(coordinate.toString());
+return coordinate;
     }
 
     public void respondToPalayRequest(int n) {
@@ -246,14 +264,7 @@ public class JourneyThroughEuropeEventHandler {
           
     }
 
-    public void respondMove(MouseEvent t) {
-                     int x =(int) t.getX();
-                     int y =(int) t.getY();
-                    
-        
-        ui.Move(x-9.5, y-51);
-        System.out.println("you are a label");
-    }
+    
    
    
 }

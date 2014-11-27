@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    The properties in this file are loaded when the HangMan game application
+    first loads.
+-->
+<properties>
+    <property_list>    
+      
+        <property name="SPLASH_SCREEN_TITLE_TEXT"   value="Journey Through Europe"></property>
+        <property name="WINDOW_WIDTH"               value="800"></property>
+        <property name="WINDOW_HEIGHT"              value="620"></property>
+        <property name="SPLASH_SCREEN_IMAGE_NAME"   value="JTESplashScreen.png"></property>
+        <property name="SELECT_SCREEN_IMAGE_NAME"  value="JTESelectionScreen.png"></property>
+        <property name="ABOUT_SCREEN_IMAGE_NAME"  value="AboutScreen.png"></property>
+        <property name="GAME_MAP_AC14_IMAGE_NAME" value="gameplay_AC14.jpg"></property>
+		<property name="GAME_MAP_AC58_IMAGE_NAME" value="gameplay_AC58.jpg"></property>
+		<property name="GAME_MAP_DF14_IMAGE_NAME" value="gameplay_DF14.jpg"></property>
+		<property name="GAME_MAP_DF58_IMAGE_NAME" value="gameplay_DF58.jpg"></property>
+		
+        <property name="AIR_MAP_IMAGE_NAME" value="FlighPlan.JPG"></property>
+		
+        <property name="DATA_PATH"                  value="./data/"></property>
+        <property name="IMG_PATH"                   value="./img/"></property>
+        <property name="RED_CARDS_IMG_PATH"                   value="./img/red/"></property>
+        <property name="GRE_CARDS_IMG_PATH"                   value="./img/green/"></property>
+        <property name="YEL_CARDS_IMG_PATH"                   value="./img/yellow/"></property>
+
+        
+        
+        <property name="LETTERS_FONT_FAMILY"        value="monospaced"></property>
+        <property name="LETTERS_FONT_SIZE"          value="24"></property>
+        <property name="DEFAULT_YES_TEXT"           value="Yes"></property>
+        <property name="DEFAULT_NO_TEXT"            value="No"></property>
+        <property name="DEFAULT_EXIT_TEXT"          value="Are you sure you wish to quit?"></property>
+        <!-- DATA FILES TO LOAD -->
+        <property name="ABOUT_FILE_NAME"         value="About.html"></property>
+	
+		
+        <!-- THESE ARE THE GUI IMAGES -->
+        <property name="START_IMG_NAME"          value="Start.png"></property>
+        <property name="LOAD_IMG_NAME"         value="Load.png"></property>
+        <property name="ABOUT_IMG_NAME"          value="About.png"></property>
+        <property name="QUIT_IMG_NAME"          value="Quit.png"></property>
+        <property name="GO_IMG_NAME"          value="Go.png"></property>
+        <property name="OK_IMG_NAME"          value="OK.png"></property>
+		
+        <property name="ABOUT_JTE_IMG_NAME"         value="AboutJTE.png"></property>
+        <property name="GAME_HISTORY_IMAGE_NAME"          value="GameHistory.png"></property>
+        <property name="AIR_MAP_IMG_NAME"          value="AirMap.png"></property>
+        <property name="DICE_IMAGE_NAME"          value="die_1.jpg"></property>
+        <property name="DOT_IMG_NAME"          value="dot.png"></property>
+    </property_list>
+    <property_options_list>
+              
+         
+    
+    <property_options name="FLAG_IMG_NAMES">
+        <option>1.png</option>
+        <option>2.png</option>
+        <option>3.png</option>
+        <option>4.png</option>
+        <option>5.png</option>
+        <option>6.png</option>
+           
+    </property_options>
+
+ <property_options name="PLAYER_IMG_NAMES">
+        <option>piece_black.png</option>
+        <option>piece_blue.png</option>
+        <option>piece_green.png</option>
+        <option>piece_red.png</option>
+        <option>piece_white.png</option>
+        <option>piece_yellow.png</option>
+           
+    </property_options>
+
+
+    <property_options name="ROLLING_DICE_IMAGE_NAME">
+        <option>die_1.jpg</option>
+        <option>die_2.jpg</option>
+        <option>die_3.jpg</option>
+        <option>die_4.jpg</option>
+        <option>die_5.jpg</option>
+        <option>die_6.jpg</option>
+           
+    </property_options>
+	   
+	   <property_options name="GRE_CARDS_IMG_NAME">
+	   
+	   <option>BASEL.jpg</option>
+<option>BERN.jpg</option>
+<option>BOLZANO.jpg</option>
+<option>BOURGES.jpg</option>
+<option>BREST.jpg</option>
+<option>BRNO.jpg</option>
+<option>BRUXELLES.jpg</option>
+<option>BUCURESTI.jpg</option>
+<option>BUDAPEST.jpg</option>
+<option>CALAIS.jpg</option>
+<option>CERNOVCY.jpg</option>
+<option>CHARKOV.jpg</option>
+<option>CLERMONT-FERRAND.jpg</option>
+<option>CLUJ-NAPOCA.jpg</option>
+<option>CONSTANTA.jpg</option>
+<option>DIJON.jpg</option>
+<option>DOVER.jpg</option>
+<option>DRESDEN.jpg</option>
+<option>FRANKFURT.jpg</option>
+<option>GALATI.jpg</option>
+<option>GENEVE.jpg</option>
+<option>GRAZ.jpg</option>
+<option>INNSBRUCK.jpg</option>
+<option>KASSEL.jpg</option>
+<option>KIJEV.jpg</option>
+<option>KOLN.jpg</option>
+<option>KRAKOV.jpg</option>
+<option>LVOV.jpg</option>
+<option>LEIPZIG.jpg</option>
+<option>LE HAVRE.jpg</option>
+<option>LILLE.jpg</option>
+<option>LIMOGES.jpg</option>
+<option>LINZ.jpg</option>
+<option>LODZ.jpg</option>
+<option>LUXEMBOURG.jpg</option>
+<option>LYON.jpg</option>
+<option>MISKOLC.jpg</option>
+<option>MUNCHEN.jpg</option>
+<option>NANCY.jpg</option>
+<option>NANTES.jpg</option>
+<option>NURNBERG.jpg</option>
+<option>ODESSA.jpg</option>
+<option>ORLEANS.jpg</option>
+<option>PARIS.jpg</option>
+<option>PLYMOUTH.jpg</option>
+<option>PLZEN.jpg</option>
+<option>PRAHA.jpg</option>
+<option>REIMS.jpg</option>
+<option>RENNES.jpg</option>
+<option>ROTTERDAM.jpg</option>
+<option>SALZBURG.jpg</option>
+<option>STUTTGART.jpg</option>
+<option>TOURS.jpg</option>
+<option>TRIESTE.jpg</option>
+<option>VINNICA.jpg</option>
+<option>WIEN.jpg</option>
+<option>WROCLAW.jpg</option>
+<option>ZAGREB.jpg</option>
+<option>ZURICH.jpg</option>
+
+	   
+	   
+       </property_options>	   
+	   
+	   <property_options name="RED_CARDS_IMG_NAME">
+  
+           <option>ABERDEEN.jpg</option>
+<option>AMSTERDAM.jpg</option>
+<option>ARHUS.jpg</option>
+<option>ARKHANGEL.jpg</option>
+<option>BELFAST.jpg</option>
+<option>BERGEN.jpg</option>
+<option>BERLIN.jpg</option>
+<option>BIRMINGHAM.jpg</option>
+<option>BREMEN.jpg</option>
+<option>BRISTOL.jpg</option>
+<option>CORK.jpg</option>
+<option>DUBLIN.jpg</option>
+<option>FAROER.jpg</option>
+<option>GAVLE.jpg</option>
+<option>GDANSK.jpg</option>
+<option>GLASGOW.jpg</option>
+<option>GOTEBORG.jpg</option>
+<option>GRONINGEN.jpg</option>
+<option>HAMBURG.jpg</option>
+<option>HAMMERFEST.jpg</option>
+<option>HANNOVER.jpg</option>
+<option>HELSINKI.jpg</option>
+<option>INVERNESS.jpg</option>
+<option>JONKOPING.jpg</option>
+<option>KARLSTAD.jpg</option>
+<option>KIEL.jpg</option>
+<option>KIRUNA.jpg</option>
+<option>KOBENHAVN.jpg</option>
+<option>LEEDS.jpg</option>
+<option>LENINGRAD.jpg</option>
+<option>LIVERPOOL.jpg</option>
+<option>LONDON.jpg</option>
+<option>LUBECK.jpg</option>
+<option>LULEA.jpg</option>
+<option>MAGDEBURG.jpg</option>
+<option>MALMO.jpg</option>
+<option>MINSK.jpg</option>
+<option>MOSKVA.jpg</option>
+<option>NARVIK.jpg</option>
+<option>NEWCASTLE.jpg</option>
+<option>NORRKOPING.jpg</option>
+<option>OSLO.jpg</option>
+<option>OULU.jpg</option>
+<option>POZNAN.jpg</option>
+<option>REYKJAVIK.jpg</option>
+<option>RIGA.jpg</option>
+<option>ROSTOCK.jpg</option>
+<option>ROVANIEMI.jpg</option>
+<option>SMOLENSK.jpg</option>
+<option>SHETLAND ISLANDS.jpg</option>
+<option>STAVANGER.jpg</option>
+<option>STOCKHOLM.jpg</option>
+<option>SUNDSVALL.jpg</option>
+<option>SZCZECIN.jpg</option>
+<option>TALLIN.jpg</option>
+<option>TAMPERE.jpg</option>
+<option>TORONDHEIM.jpg</option>
+<option>VAASA.jpg</option>
+<option>VITEBSK.jpg</option>
+<option>WARSZAWA.jpg</option>
+
+    </property_options>
+	   
+	   
+	   
+	   
+	      <property_options name="YEL_CARDS_IMG_NAME">
+  <option>AJACCIO.jpg</option>
+<option>ALICANTE.jpg</option>
+<option>ANCONA.jpg</option>
+<option>ATHINAI.jpg</option>
+<option>BADAJOZ.jpg</option>
+<option>BARCELONA.jpg</option>
+<option>BARI.jpg</option>
+<option>BEOGRAD.jpg</option>
+<option>BIARRITZ.jpg</option>
+<option>BOLOGNA.jpg</option>
+<option>BORDEAUX.jpg</option>
+<option>CADIZ.jpg</option>
+<option>CAGLIARI.jpg</option>
+<option>CATANIA.jpg</option>
+<option>COIMBRA.jpg</option>
+<option>CORDOBA.jpg</option>
+<option>DUBROVNIK.jpg</option>
+<option>EDIRNE.jpg</option>
+<option>FIRENZE.jpg</option>
+<option>GENOVA.jpg</option>
+<option>GRANADA.jpg</option>
+<option>ISTANBUL.jpg</option>
+<option>LARISA.jpg</option>
+<option>LA CORUNA.jpg</option>
+<option>LISBOA.jpg</option>
+<option>MADRID.jpg</option>
+<option>MALAGA.jpg</option>
+<option>MARSEILLE.jpg</option>
+<option>MESSINA.jpg</option>
+<option>MILANO.jpg</option>
+<option>NAPOLI.jpg</option>
+<option>NARBONNE.jpg</option>
+<option>NICE.jpg</option>
+<option>NIS.jpg</option>
+<option>PALERMO.jpg</option>
+<option>PALMA MALLORCA.jpg</option>
+<option>PESCARA.jpg</option>
+<option>PISA.jpg</option>
+<option>PLOVDIV.jpg</option>
+<option>PORTO.jpg</option>
+<option>ROMA.jpg</option>
+<option>SANTANDER.jpg</option>
+<option>SAN SEBASTIAN.jpg</option>
+<option>SARAJEVO.jpg</option>
+<option>SASSARI.jpg</option>
+<option>SEVILLA.jpg</option>
+<option>SKOPJE.jpg</option>
+<option>SOFIJA.jpg</option>
+<option>SPLIT.jpg</option>
+<option>TARANTO.jpg</option>
+<option>THESSALONIKI.jpg</option>
+<option>TIRANE.jpg</option>
+<option>TORINO.jpg</option>
+<option>TOULOUSE.jpg</option>
+<option>VALENCIA.jpg</option>
+<option>VALLADOLID.jpg</option>
+<option>VARNA.jpg</option>
+<option>VENEZIA.jpg</option>
+<option>ZARAGOZA.jpg</option>
+
+
+           
+    </property_options>
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+    </property_options_list>
+</properties>
