@@ -5,7 +5,7 @@
  */
 package JTE.ui;
 
-import JTE.file.XMLParser;
+//import JTE.file.XMLParser;
 import application.Main;
 import java.io.FileReader;
 import properties_manager.PropertiesManager;
@@ -17,7 +17,7 @@ import properties_manager.PropertiesManager;
 public class Card {
     
     private JourneyThroughEuropeUI ui;
-    private XMLParser paser;
+//    private XMLParser paser;
     private String cityNameOnCard;
     private String color;
 
